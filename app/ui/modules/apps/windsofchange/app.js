@@ -6,6 +6,8 @@ angular.module("beamng.apps").directive("windsofchange", [
           angle: randomValue(360),
           change: 0,
           gap: 0,
+          xCoeff: 0,
+          yCoeff: 0,
         };
         this.speed = {
           speed: randomValue(40),
@@ -37,8 +39,8 @@ angular.module("beamng.apps").directive("windsofchange", [
           newAngle = 360 - newAngle;
         }
         let radians = Math.PI / 180;
-        this.xCoeff = Math.sin(newAngle * radians);
-        this.yCoeff = Math.cos(newAngle * radians);
+        this.direction.xCoeff = Math.sin(newAngle * radians);
+        this.direction.yCoeff = Math.cos(newAngle * radians);
         this.direction.gap = newGap;
         this.direction.change = newChange;
         this.direction.angle = newAngle;
@@ -91,9 +93,9 @@ angular.module("beamng.apps").directive("windsofchange", [
         "$scope",
         function ($scope) {
           $scope.wind = {
-            xCoeff: 0,
-            yCoeff: 1,
-            mag: 0,
+            xCoeff: wind.direction.xCoeff,
+            yCoeff: wind.direction.yCoeff,
+            mag: wind.speed.speed,
           };
 
           // fix this:
@@ -108,9 +110,9 @@ angular.module("beamng.apps").directive("windsofchange", [
             function (newVal, oldVal) {
               bngApi.queueAllObjectLua(
                 "obj:setWind(" +
-                  wind.xCoeff * wind.speed.speed +
+                  wind.direction.xCoeff * wind.speed.speed +
                   "," +
-                  wind.yCoeff * wind.speed.speed +
+                  wind.direction.yCoeff * wind.speed.speed +
                   ",0)"
               );
             },

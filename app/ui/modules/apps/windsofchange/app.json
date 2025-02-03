@@ -1,10 +1,8 @@
 {
   "domElement": "<winds></winds>",
-  "name": "dyanmic winds",
-  "types": [
-    "ui.apps.categories.info"
-  ],
-  "description": "The winds of change.",
+  "name": "The Winds of Change",
+  "types": ["ui.apps.categories.info"],
+  "description": "Dyanmic winds",
   "css": {
     "left": "200px",
     "height": "300px",
@@ -13,6 +11,6 @@
   },
   "author": "Daefron",
   "version": "0.1",
-  "preserveAspectRatio" : true,
+  "preserveAspectRatio": true,
   "directive": "windsofchange"
 }
