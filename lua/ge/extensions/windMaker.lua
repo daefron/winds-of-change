@@ -67,7 +67,8 @@ local function onUpdate()
     end
     changeDirection()
     changeSpeed()
-    log("Angle: ", wind.direction.value, "Speed: ", wind.direction.speed)
+    log("I", "Angle: ", wind.direction.value)
+    log("I", "Speed: ", wind.speed.value)
     local radians = math.pi / 180
     local xcoeff = math.sin(wind.direction.value * radians)
     local ycoeff = math.cos(wind.direction.value * radians)
