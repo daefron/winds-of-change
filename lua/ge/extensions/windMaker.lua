@@ -12,7 +12,7 @@ local wind = {
         gap = 0
     },
     speed = {
-        speed = randomValue(40),
+        speed = randomValue(400),
         change = 0,
         gap = 0
     }
@@ -43,20 +43,20 @@ local function onUpdate()
         wind.direction.angle = newAngle
     end
     local function changeSpeed()
-        local gapDiff = (math.random() - 0.5) / 1000
+        local gapDiff = (math.random() - 0.5) / 10
         local newGap = gapDiff + wind.speed.gap
         local newChange = wind.speed.change + newGap
-        if newChange > 0.005 then
-            newChange = 0.005
+        if newChange > 0.5 then
+            newChange = 0.5
             newGap = newGap * 0.9
         end
-        if newChange < -0.005 then
-            newChange = -0.005
+        if newChange < -0.5 then
+            newChange = -0.5
             newGap = newGap * 0.9
         end
         local newSpeed = wind.speed.speed + newChange
-        if newSpeed > 40 then
-            newSpeed = 40
+        if newSpeed > 400 then
+            newSpeed = 400
         end
         if newSpeed < 0 then
             newSpeed = 0
@@ -67,8 +67,6 @@ local function onUpdate()
     end
     changeDirection()
     changeSpeed()
-    log("angle", wind.direction.angle)
-    log("speed", wind.speed.speed)
     local radians = math.pi / 180
     local xcoeff = math.sin(wind.direction.angle * radians)
     local ycoeff = math.cos(wind.direction.angle * radians)
