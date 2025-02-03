@@ -12,7 +12,7 @@ local wind = {
         gap = 0
     },
     speed = {
-        speed = randomValue(400),
+        speed = randomValue(70),
         change = 0,
         gap = 0
     }
@@ -43,20 +43,20 @@ local function onUpdate()
         wind.direction.angle = newAngle
     end
     local function changeSpeed()
-        local gapDiff = (math.random() - 0.5) / 10
+        local gapDiff = (math.random() - 0.5) / 1000
         local newGap = gapDiff + wind.speed.gap
         local newChange = wind.speed.change + newGap
-        if newChange > 0.5 then
-            newChange = 0.5
+        if newChange > 0.005 then
+            newChange = 0.005
             newGap = newGap * 0.9
         end
-        if newChange < -0.5 then
-            newChange = -0.5
+        if newChange < -0.005 then
+            newChange = -0.005
             newGap = newGap * 0.9
         end
         local newSpeed = wind.speed.speed + newChange
-        if newSpeed > 400 then
-            newSpeed = 400
+        if newSpeed > 70 then
+            newSpeed = 70
         end
         if newSpeed < 0 then
             newSpeed = 0
