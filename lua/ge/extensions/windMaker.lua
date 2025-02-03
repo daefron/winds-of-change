@@ -31,7 +31,7 @@ local function onUpdate()
             newChange = -0.1
             newGap = newGap * 0.9
         end
-        local newAngle = wind.direction.angle + newChange
+        local newAngle = wind.direction.value + newChange
         if newAngle > 360 then
             newAngle = newAngle - 360
         end
