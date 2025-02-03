@@ -54,7 +54,7 @@ local function onUpdate()
             newChange = -0.005
             newGap = newGap * 0.9
         end
-        local newSpeed = wind.speed.speed + newChange
+        local newSpeed = wind.speed.value + newChange
         if newSpeed > 70 then
             newSpeed = 70
         end
