@@ -67,8 +67,8 @@ local function onUpdate()
     end
     changeDirection()
     changeSpeed()
-    print("angle" + wind.direction.angle)
-    print("speed" + wind.speed.speed)
+    log("angle" + wind.direction.angle)
+    log("speed" + wind.speed.speed)
     local radians = math.pi / 180
     local xcoeff = math.sin(wind.direction.angle * radians)
     local ycoeff = math.cos(wind.direction.angle * radians)
@@ -77,10 +77,10 @@ local function onUpdate()
 end
 
 function onInit()
-    print("Wind generator running.")
+    log("Wind generator running.")
 end
 
-M.onInit = onInit
+M.onExtensionLoaded = onInit
 M.onUpdate = onUpdate
 
 return M
