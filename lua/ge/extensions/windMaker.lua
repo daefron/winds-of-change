@@ -7,12 +7,12 @@ end
 -- initial wind properties
 local wind = {
     direction = {
-        angle = randomValue(360),
+        value = randomValue(360),
         change = 0,
         gap = 0
     },
     speed = {
-        speed = randomValue(70),
+        value = randomValue(70),
         change = 0,
         gap = 0
     }
@@ -40,7 +40,7 @@ local function onUpdate()
         end
         wind.direction.gap = newGap
         wind.direction.change = newChange
-        wind.direction.angle = newAngle
+        wind.direction.value = newAngle
     end
     local function changeSpeed()
         local gapDiff = (math.random() - 0.5) / 1000
@@ -63,15 +63,16 @@ local function onUpdate()
         end
         wind.speed.gap = newGap
         wind.speed.change = newChange
-        wind.speed.speed = newSpeed
+        wind.speed.value = newSpeed
     end
     changeDirection()
     changeSpeed()
+    log("Angle: ", wind.direction.value, "Speed: ", wind.direction.speed)
     local radians = math.pi / 180
-    local xcoeff = math.sin(wind.direction.angle * radians)
-    local ycoeff = math.cos(wind.direction.angle * radians)
-    be:queueAllObjectLua('obj:setWind(' .. tostring(xcoeff * wind.speed.speed) .. "," ..
-                             tostring(ycoeff * wind.speed.speed) .. ",0)")
+    local xcoeff = math.sin(wind.direction.value * radians)
+    local ycoeff = math.cos(wind.direction.value * radians)
+    be:queueAllObjectLua('obj:setWind(' .. tostring(xcoeff * wind.speed.value) .. "," ..
+                             tostring(ycoeff * wind.speed.value) .. ",0)")
 end
 
 function onInit()
