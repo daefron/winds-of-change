@@ -18,8 +18,6 @@ local wind = {
 }
 
 local function updateWind(message)
-    log('D', 'updateWind', message)
-
     local function changeDirection()
         local gapDiff = (math.random() - 0.5) / 100
         local newGap = gapDiff + wind.direction.gap
@@ -71,10 +69,14 @@ local function updateWind(message)
     local radians = math.pi / 180
     local xcoeff = math.sin(wind.direction.value * radians)
     local ycoeff = math.cos(wind.direction.value * radians)
-    log('D', 'windSpeed:', wind.speed.value)
-    log('D', 'windDirection: ', wind.direction.value)
     be:queueAllObjectLua('obj:setWind(' .. tostring(xcoeff * wind.speed.value) .. "," ..
                              tostring(ycoeff * wind.speed.value) .. ",0)")
+
+    local speedData = wind.speed.value
+    local directionData = wind.direction.value
+    local data = speedData .. ":" .. directionData  
+    guihooks.trigger('ReceiveData', data)
+
 end
 
 local function stopWind()

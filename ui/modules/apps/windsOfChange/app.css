@@ -1,14 +1,33 @@
 #windsofchangeContainer {
   width: 100%;
   height: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   align-content: center;
 }
 
-#windsofchangeContainer > * {
-  margin: 0;
-  padding: 0;
+.visualHolder {
+  width: 100%;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow {
+  width: 400px;
+  height: 400px;
+}
+
+.buttonHolder,
+.statsHolder {
+  width: auto;
+  margin-inline: 20px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.buttonHolder > .button {
+  width: 100%;
 }

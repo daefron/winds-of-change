@@ -6,9 +6,37 @@
   />
 
   <div id="windsOfChangeContainer">
-    <p>It loaded</p>
-    <md-button ng-click="startWind()">Start</md-button>
-    <md-button ng-click="endWind()">Stop</md-button>
-
+    <div class="visualHolder">
+      <svg
+        class="arrow"
+        viewBox="0 0 1080 1080"
+        style="transform: rotate({{ direction }}deg)"
+      >
+        <g transform="matrix(0.54 0 0 0.55 540 225)">
+          <path
+            style="stroke: none; fill: rgb(255, 255, 255)"
+            transform=" translate(-480, 480)"
+            d="M 440 -160 L 440 -647 L 216 -423 L 160 -480 L 480 -800 L 800 -480 L 744 -423 L 520 -647 L 520 -160 z"
+          />
+        </g>
+        <g transform="matrix(0.66 0 0 9.57 540 707.1)">
+          <rect
+            style="stroke: none; fill: rgb(255, 255, 255)"
+            x="-33.0835"
+            y="-33.0835"
+            width="66.167"
+            height="66.167"
+          />
+        </g>
+      </svg>
+    </div>
+    <div class="statsHolder">
+      <span>Speed: {{ speed }} km/h</span>
+      <span>Direction: {{ direction }}°</span>
+    </div>
+    <div class="buttonHolder">
+      <md-button class="button" ng-click="startWind()">Start</md-button>
+      <md-button class="button" ng-click="endWind()">Stop</md-button>
+    </div>
   </div>
 </div>
