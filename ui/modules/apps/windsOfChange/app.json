@@ -1,0 +1,19 @@
+{
+  "domElement": "<winds-of-change></winds-of-change>",
+  "name": "Winds of Change",
+  "types": [
+    "ui.apps.categories.info"
+  ],
+  "description": "winds-of-change",
+  "css": {
+    "left": "0px",
+    "height": "auto",
+    "width": "270px",
+    "min-width": "200px",
+    "min-height": "90px",
+    "top": "0px"
+  },
+  "author": "Daefron",
+  "version": "0.1",
+  "directive": "windsOfChange"
+}
