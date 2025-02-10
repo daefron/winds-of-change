@@ -74,7 +74,7 @@ local function updateWind(message)
 
     local speedData = wind.speed.value
     local directionData = wind.direction.value
-    local data = speedData .. ":" .. directionData  
+    local data = speedData .. ":" .. directionData
     guihooks.trigger('ReceiveData', data)
 
 end
@@ -94,6 +94,10 @@ local function stopWind()
     }
 end
 
+local function log(info)
+    log('I', 'log', info)
+end
+
 local function onExtensionLoaded()
     log('D', 'onExtensionLoaded', "Called")
 end
@@ -107,5 +111,6 @@ M.onExtensionUnloaded = onExtensionUnloaded
 
 M.updateWind = updateWind
 M.stopWind = stopWind
+M.log = log
 
 return M

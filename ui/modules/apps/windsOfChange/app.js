@@ -9,14 +9,29 @@ angular.module("beamng.apps").directive("windsOfChange", [
       controller: [
         "$scope",
         function ($scope) {
-          $scope.speed = 0;
-          $scope.direction = 0;
+          $scope.carDirection = 0;
+          $scope.windDirection = 0;
+          $scope.windSpeed = 0;
+          $scope.direction = $scope.windDirection + $scope.carDirection;
 
-          let streamList = ["engineInfo"];
-          StreamsManager.add(streamList);
-
+          var streamsList = ["sensors"];
+          StreamsManager.add(streamsList);
+          $scope.$on("streamsUpdate", function (event, streams) {
+            if (!streams.sensors) {
+              return;
+            }
+            $scope.carDirection = (-streams.sensors.yaw * 360) / (2 * Math.PI);
+            if ($scope.carDirection < 0) {
+              $scope.carDirection += 360;
+            }
+            $scope.direction =
+              Number($scope.windDirection) - Number($scope.carDirection) + 90;
+            if ($scope.direction > 360) {
+              $scope.direction -= 360;
+            }
+          });
           $scope.$on("destroy", function () {
-            StreamsManager.remove(streamList);
+            StreamsManager.remove(streamsList);
           });
           let windLoop;
           $scope.startWind = function (event) {
@@ -37,8 +52,13 @@ angular.module("beamng.apps").directive("windsOfChange", [
           $scope.$on("ReceiveData", function (_, data) {
             const newSpeed = data.split(":")[0];
             const newDirection = data.split(":")[1];
-            $scope.speed = Number.parseFloat(newSpeed).toFixed(2);
-            $scope.direction = Number.parseFloat(newDirection).toFixed(2);
+            $scope.windSpeed = Number.parseFloat(newSpeed).toFixed(2);
+            $scope.windDirection = Number.parseFloat(newDirection).toFixed(2);
+            $scope.direction =
+              Number($scope.windDirection) - Number($scope.carDirection) + 90;
+            if ($scope.direction > 360) {
+              $scope.direction -= 360;
+            }
           });
         },
       ],

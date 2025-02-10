@@ -7,32 +7,35 @@
 
   <div id="windsOfChangeContainer">
     <div class="visualHolder">
+      <svg class="arrow" viewBox="0 -1080 1080 1080">
+        <path
+          fill="white"
+          d="m200-120-40-40 320-720 320 720-40 40-280-120zm84-124 196-84 196 84-196-440zm196-84"
+        />
+      </svg>
       <svg
-        class="arrow"
-        viewBox="0 0 1080 1080"
         style="transform: rotate({{ direction }}deg)"
+        class="wind"
+        viewBox="0 0 100 24"
+        fill="none"
+        stroke="white"
+        stroke-width="1"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-        <g transform="matrix(0.54 0 0 0.55 540 225)">
-          <path
-            style="stroke: none; fill: rgb(255, 255, 255)"
-            transform=" translate(-480, 480)"
-            d="M 440 -160 L 440 -647 L 216 -423 L 160 -480 L 480 -800 L 800 -480 L 744 -423 L 520 -647 L 520 -160 z"
-          />
-        </g>
-        <g transform="matrix(0.66 0 0 9.57 540 707.1)">
-          <rect
-            style="stroke: none; fill: rgb(255, 255, 255)"
-            x="-33.0835"
-            y="-33.0835"
-            width="66.167"
-            height="66.167"
-          />
-        </g>
+        <path
+          stroke="white
+      "
+          d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"
+        />
+        <path stroke="white" d="M9.6 4.6A2 2 0 1 1 11 8H2" />
+        <path stroke="white" d="M12.6 19.4A2 2 0 1 0 14 16H2" />
       </svg>
     </div>
     <div class="statsHolder">
-      <span>Speed: {{ speed }} km/h</span>
-      <span>Direction: {{ direction }}°</span>
+      <span>Speed: {{ windSpeed }} km/h</span>
+      <span>Wind Direction: {{ windDirection }}°</span>
+      <span>Car direction: {{ carDirection }}°</span>
     </div>
     <div class="buttonHolder">
       <md-button class="button" ng-click="startWind()">Start</md-button>
