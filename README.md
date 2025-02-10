@@ -4,7 +4,7 @@
 
 This is a mod for Beam.NG that adds dynamic wind to the game.
 
-![page](docs/videos/page.mp4)
+![page](docs/images/page.png)
 
 ## Why this project
 
