@@ -17,7 +17,7 @@ local wind = {
     }
 }
 
-local function updateWind(message)
+local function updateWind(minSpeed, maxSpeed)
     local function changeDirection()
         local gapDiff = (math.random() - 0.5) / 100
         local newGap = gapDiff + wind.direction.gap
@@ -54,11 +54,11 @@ local function updateWind(message)
             newGap = newGap * 0.9
         end
         local newSpeed = wind.speed.value + newChange
-        if newSpeed > 65 then
-            newSpeed = 65
+        if newSpeed > maxSpeed then
+            newSpeed = maxSpeed
         end
-        if newSpeed < 0 then
-            newSpeed = 0
+        if newSpeed < minSpeed then
+            newSpeed = minSpeed
         end
         wind.speed.gap = newGap
         wind.speed.change = newChange
@@ -100,6 +100,10 @@ end
 
 local function onExtensionLoaded()
     log('D', 'onExtensionLoaded', "Called")
+end
+
+local function onExtensionUnloaded()
+    log('D', 'onExtensionUnloaded', "Called")
 end
 
 M.onExtensionLoaded = onExtensionLoaded

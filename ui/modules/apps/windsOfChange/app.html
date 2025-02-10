@@ -15,6 +15,9 @@
         <div class="windLine"></div>
         <div class="windLine"></div>
         <div class="windLine"></div>
+        <div class="windLine"></div>
+        <div class="windLine"></div>
+        <div class="windLine"></div>
       </div>
       <svg class="arrow" viewBox="0 -1080 1080 1080">
         <path
@@ -26,6 +29,18 @@
     <div class="statsHolder">
       <span>Wind speed: {{ windSpeed }} km/h</span>
       <span>Wind direction: {{ windDirection }}°</span>
+    </div>
+    <div class="inputsHolder">
+      <div class="inputHolder">
+        <span class="tag">Min speed: </span>
+        <input id="minSpeedInput" type="number" value="0" />
+        <span class="speedType">km/h</span>
+      </div>
+      <div class="inputHolder">
+        <span class="tag">Max speed: </span>
+        <input id="maxSpeedInput" type="number" value="55" />
+        <span class="speedType">km/h</span>
+      </div>
     </div>
     <div class="buttonHolder">
       <md-button class="button" ng-click="startWind()">Start</md-button>

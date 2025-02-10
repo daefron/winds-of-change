@@ -32,7 +32,10 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (scope.direction > 360) {
             scope.direction -= 360;
           }
+          const maxSpeed = document.getElementById("maxSpeedInput").value;
           windLines.style.transform = "rotate(" + scope.direction + "deg)";
+          windLines.style.margin =
+            -200 * (1 - scope.windSpeed / maxSpeed) + "px";
         });
 
         scope.$on("destroy", function () {
@@ -45,7 +48,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
             return;
           }
           windLoop = setInterval(() => {
-            bngApi.engineLua("extensions.windsOfChange.updateWind()");
+            const minSpeed = document.getElementById("minSpeedInput").value;
+            const maxSpeed = document.getElementById("maxSpeedInput").value;
+            bngApi.engineLua(
+              "extensions.windsOfChange.updateWind(" +
+                minSpeed +
+                "," +
+                maxSpeed +
+                ")"
+            );
           }, 50);
         };
 
@@ -59,9 +70,13 @@ angular.module("beamng.apps").directive("windsOfChange", [
           const newSpeed = data.split(":")[0];
           const newDirection = data.split(":")[1];
           scope.windSpeed = Number.parseFloat(newSpeed).toFixed(2);
-          scope.windDirection = Number.parseFloat(Number(newDirection) - 90).toFixed(2);
+          scope.windDirection = Number.parseFloat(
+            Number(newDirection) - 90
+          ).toFixed(2);
           if (scope.windDirection < 0) {
-            scope.windDirection = Number.parseFloat(Number.parseFloat(scope.windDirection) + 360).toFixed(2);
+            scope.windDirection = Number.parseFloat(
+              Number.parseFloat(scope.windDirection) + 360
+            ).toFixed(2);
           }
           scope.direction =
             Number(scope.windDirection) - Number(scope.carDirection) + 180;

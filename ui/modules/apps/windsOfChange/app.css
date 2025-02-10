@@ -1,5 +1,8 @@
-span, button {
+span,
+button,
+input {
   font-size: 18px;
+  height: 28px;
 }
 
 #windsofchangeContainer {
@@ -21,16 +24,15 @@ span, button {
 }
 
 #windLineHolder {
-  margin: -50px;
   height: 700px;
-  width: 2000px;
+  width: 1000px;
   display: flex;
   justify-content: space-between;
 }
 
 @keyframes windLineMovement {
   from {
-    margin-top: -300px;
+    margin-top: -400px;
   }
   to {
     margin-top: 0px;
@@ -43,8 +45,9 @@ span, button {
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   height: 1200px;
-  width: 7px;
-  border-right: dashed 10px rgba(255, 255, 255, 0.35);
+  margin-left: -8px;
+  border-right: solid 5px transparent;
+  border-image: url("/ui/modules/apps/windsOfChange/tset.png") 5 round;
 }
 
 .arrow {
@@ -60,8 +63,30 @@ span, button {
   justify-content: space-evenly;
   border-top: solid 1px white;
 }
+.inputsHolder {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
 .statsHolder > * {
   margin: 5px;
+}
+.inputHolder {
+  width: 290px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px;
+}
+  .inputHolder > .tag {
+  width: fit-content;
+}
+.inputHolder > input {
+  width: 110px;
+}
+.inputHolder > .speedType {
+  width: 50px;
 }
 
 .buttonHolder {
