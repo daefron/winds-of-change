@@ -47,7 +47,7 @@ input {
   height: 1200px;
   margin-left: -8px;
   border-right: solid 5px transparent;
-  border-image: url("/ui/modules/apps/windsOfChange/tset.png") 5 round;
+  border-image: url("/ui/modules/apps/windsOfChange/border.png") 5 round;
 }
 
 .arrow {
