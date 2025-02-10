@@ -102,15 +102,10 @@ local function onExtensionLoaded()
     log('D', 'onExtensionLoaded', "Called")
 end
 
-local function onExtensionUnloaded()
-    log('D', 'onExtensionUnloaded', 'Called')
-end
-
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
 
 M.updateWind = updateWind
 M.stopWind = stopWind
-M.log = log
 
 return M

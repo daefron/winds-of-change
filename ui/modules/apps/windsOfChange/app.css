@@ -20,7 +20,7 @@ span, button {
   overflow: hidden;
 }
 
-.windLineHolder {
+#windLineHolder {
   margin: -50px;
   height: 700px;
   width: 2000px;
