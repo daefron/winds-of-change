@@ -8,10 +8,10 @@
   "css": {
     "left": "0px",
     "height": "auto",
-    "width": "400px",
-    "min-width": "200px",
-    "min-height": "90px",
-    "top": "0px"
+    "width": "300px",
+    "min-width": "300px",
+    "min-height": "300px",
+    "top": "400px"
   },
   "author": "Daefron",
   "version": "0.1",

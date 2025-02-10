@@ -7,35 +7,27 @@
 
   <div id="windsOfChangeContainer">
     <div class="visualHolder">
+      <div class="windLineHolder"
+      style="transform: rotate({{ direction }}deg)"
+      >
+        <div class="windLine"></div>
+        <div class="windLine"></div>
+        <div class="windLine"></div>
+        <div class="windLine"></div>
+        <div class="windLine"></div>
+        <div class="windLine"></div>
+        <div class="windLine"></div>
+      </div>
       <svg class="arrow" viewBox="0 -1080 1080 1080">
         <path
           fill="white"
           d="m200-120-40-40 320-720 320 720-40 40-280-120zm84-124 196-84 196 84-196-440zm196-84"
         />
       </svg>
-      <svg
-        style="transform: rotate({{ direction }}deg)"
-        class="wind"
-        viewBox="0 0 100 24"
-        fill="none"
-        stroke="white"
-        stroke-width="1"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path
-          stroke="white
-      "
-          d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"
-        />
-        <path stroke="white" d="M9.6 4.6A2 2 0 1 1 11 8H2" />
-        <path stroke="white" d="M12.6 19.4A2 2 0 1 0 14 16H2" />
-      </svg>
     </div>
     <div class="statsHolder">
-      <span>Speed: {{ windSpeed }} km/h</span>
-      <span>Wind Direction: {{ windDirection }}°</span>
-      <span>Car direction: {{ carDirection }}°</span>
+      <span>Wind speed: {{ windSpeed }} km/h</span>
+      <span>Wind direction: {{ windDirection }}°</span>
     </div>
     <div class="buttonHolder">
       <md-button class="button" ng-click="startWind()">Start</md-button>

@@ -20,12 +20,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
             if (!streams.sensors) {
               return;
             }
-            $scope.carDirection = (-streams.sensors.yaw * 360) / (2 * Math.PI);
+            $scope.carDirection = Number.parseFloat(
+              (-streams.sensors.yaw * 360) / (2 * Math.PI)
+            ).toFixed(2);
             if ($scope.carDirection < 0) {
               $scope.carDirection += 360;
             }
             $scope.direction =
-              Number($scope.windDirection) - Number($scope.carDirection) + 90;
+              Number($scope.windDirection) - Number($scope.carDirection) + 180;
             if ($scope.direction > 360) {
               $scope.direction -= 360;
             }
@@ -53,9 +55,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
             const newSpeed = data.split(":")[0];
             const newDirection = data.split(":")[1];
             $scope.windSpeed = Number.parseFloat(newSpeed).toFixed(2);
-            $scope.windDirection = Number.parseFloat(newDirection).toFixed(2);
+            $scope.windDirection = Number.parseFloat(newDirection - 90).toFixed(
+              2
+            );
+            if ($scope.windDirection < 0) {
+              $scope.windDirection += 360;
+            }
             $scope.direction =
-              Number($scope.windDirection) - Number($scope.carDirection) + 90;
+              Number($scope.windDirection) - Number($scope.carDirection) + 180;
             if ($scope.direction > 360) {
               $scope.direction -= 360;
             }
