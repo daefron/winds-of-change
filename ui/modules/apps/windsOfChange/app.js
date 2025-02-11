@@ -98,6 +98,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         scope.startWind = function (event) {
           if (windLoop) {
+            bngApi.engineLua("extensions.windsOfChange.refreshWind()");
             return;
           }
           startWind();
@@ -109,10 +110,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
         };
 
-        scope.refreshWind = function (event) {
-          clearInterval(windLoop);
-          bngApi.engineLua("extensions.windsOfChange.refreshWind()");
-          startWind();
+        let settings = document.getElementById("toHide");
+        settings.style.display = "none";
+        scope.hideSettings = function (event) {
+          if (settings.style.display == "none") {
+            settings.style.display = "flex";
+          } else {
+            settings.style.display = "none";
+          }
         };
 
         scope.$on("ReceiveData", function (_, data) {

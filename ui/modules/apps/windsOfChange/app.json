@@ -7,11 +7,11 @@
   "description": "winds-of-change",
   "css": {
     "left": "0px",
-    "height": "auto",
+    "height": "420px",
     "width": "300px",
     "min-width": "300px",
-    "min-height": "400px",
-    "top": "400px"
+    "min-height": "420px",
+    "top": "500px"
   },
   "author": "Daefron",
   "version": "0.1",

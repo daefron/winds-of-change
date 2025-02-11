@@ -25,38 +25,54 @@
           d="m200-120-40-40 320-720 320 720-40 40-280-120zm84-124 196-84 196 84-196-440zm196-84"
         />
       </svg>
+      <div id="toHide">
+        <div class="inputHolder">
+          <span class="tag">Speed range:</span>
+          <input
+            id="minSpeedInput"
+            class="input input-light"
+            type="number"
+            value="0"
+          />
+          <span>&nbsp;-&nbsp;</span>
+          <input
+            id="maxSpeedInput"
+            class="input input-light"
+            type="number"
+            value="55"
+          />
+          <span class="speedType">&nbsp;km/h</span>
+        </div>
+        <div class="inputHolder">
+          <span class="tag">Angle range:</span>
+          <input
+            id="minAngleInput"
+            class="input input-light"
+            type="number"
+            value="0"
+          />
+          <span>&nbsp;-&nbsp;</span>
+          <input
+            id="maxAngleInput"
+            class="input input-light"
+            type="number"
+            value="360"
+          />
+          <span>&nbsp;°</span>
+        </div>
+      </div>
+      <md-button class="settingsButton" ng-click="hideSettings()">
+        <md-icon class="material-icons settingsIcon">settings</md-icon>
+      </md-button>
     </div>
-    <div class="statHolder">
-      <span class="windsText stat">Wind speed:</span>
-      <span class="windsText stat">{{ windSpeed }} km/h</span>
-    </div>
-    <div class="statHolder">
-      <span class="windsText stat">Wind angle:</span>
-      <span class="windsText stat">{{ windDirection }} °</span>
-    </div>
-    <div class="inputHolder">
-      <span class="tag windsText">Speed range:</span>
-      <input id="minSpeedInput" class="input" type="number" value="0" />
-      <span class="windsText">&nbsp;-&nbsp;</span>
-      <input id="maxSpeedInput" class="input" type="number" value="55" />
-      <span class="speedType windsText">&nbsp;km/h</span>
-    </div>
-    <div class="inputHolder">
-      <span class="tag windsText">Angle range:</span>
-      <input id="minAngleInput" class="input" type="number" value="0" />
-      <span class="windsText">&nbsp;-&nbsp;</span>
-      <input id="maxAngleInput" class="input" type="number" value="360" />
-      <span class="windsText">&nbsp;°</span>
-    </div>
+    <span class="stat">Wind speed: {{ windSpeed }} km/h</span>
+    <span class="stat">Wind angle: {{ windDirection }} °</span>
     <div class="buttonHolder">
       <md-button class="button" ng-click="startWind()">
         <md-icon class="material-icons">play_arrow</md-icon>
       </md-button>
       <md-button class="button" ng-click="endWind()">
         <md-icon class="material-icons">stop</md-icon>
-      </md-button>
-      <md-button class="button" ng-click="refreshWind()">
-        <md-icon class="material-icons">refresh</md-icon>
       </md-button>
     </div>
   </div>
