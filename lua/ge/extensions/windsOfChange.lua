@@ -87,6 +87,12 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle)
 end
 
 local function stopWind()
+    be:queueAllObjectLua('obj:setWind(0,0,0)')
+    local data = "0:90"
+    guihooks.trigger('ReceiveData', data)
+end
+
+local function refreshWind()
     wind = {
         direction = {
             value = randomValue(360),
@@ -114,5 +120,6 @@ M.onExtensionUnloaded = onExtensionUnloaded
 
 M.updateWind = updateWind
 M.stopWind = stopWind
+M.refreshWind = refreshWind
 
 return M

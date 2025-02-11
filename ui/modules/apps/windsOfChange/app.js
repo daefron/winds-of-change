@@ -21,6 +21,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (!streams.sensors) {
             return;
           }
+          updateValues();
           scope.carDirection = Number.parseFloat(
             (-streams.sensors.yaw * 360) / (2 * Math.PI)
           ).toFixed(2);
@@ -28,57 +29,59 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.carDirection += 360;
           }
           scope.direction =
-            Number(scope.windDirection) - Number(scope.carDirection) + 180;
+            Number(scope.windDirection) - Number(scope.carDirection) + 90;
           if (scope.direction > 360) {
             scope.direction -= 360;
           }
-          const maxSpeed = document.getElementById("maxSpeedInput").value;
           windLines.style.transform = "rotate(" + scope.direction + "deg)";
-          windLines.style.margin =
-            -200 * (1 - scope.windSpeed / maxSpeed) + "px";
+          windLines.style.margin = -200 * (1 - scope.windSpeed / 200) + "px";
         });
 
         scope.$on("destroy", function () {
           StreamsManager.remove(streamsList);
+          if (windLoop) {
+            clearInterval(windLoop);
+            windLoop = null;
+          }
         });
 
         let windLoop;
-        scope.startWind = function (event) {
-          if (windLoop) {
-            return;
+        let minSpeed, maxSpeed, minAngle, maxAngle;
+        function updateValues() {
+          minSpeed = Number(document.getElementById("minSpeedInput").value);
+          if (minSpeed < 0) {
+            document.getElementById("minSpeedInput").value = 0;
           }
+          maxSpeed = Number(document.getElementById("maxSpeedInput").value);
+          if (maxSpeed < 0) {
+            document.getElementById("maxSpeedInput").value = 0;
+          }
+          if (minSpeed > maxSpeed) {
+            document.getElementById("maxSpeedInput").value = minSpeed;
+          }
+          minAngle =
+            Number(document.getElementById("minAngleInput").value) + 90;
+          if (minAngle < 90) {
+            document.getElementById("minAngleInput").value = 0;
+          }
+          if (minAngle > 449) {
+            document.getElementById("minAngleInput").value = 359;
+          }
+          maxAngle =
+            Number(document.getElementById("maxAngleInput").value) + 90;
+          if (maxAngle < 91) {
+            document.getElementById("maxAngleInput").value = 1;
+          }
+          if (maxAngle > 450) {
+            document.getElementById("maxAngleInput").value = 360;
+          }
+          if (minAngle > maxAngle) {
+            document.getElementById("maxAngleInput").value = minAngle - 90 + 1;
+          }
+        }
+        function startWind() {
           windLoop = setInterval(() => {
-            let minSpeed = document.getElementById("minSpeedInput").value;
-            if (minSpeed < 0) {
-              document.getElementById("minSpeedInput").value = 0;
-            }
-            let maxSpeed = document.getElementById("maxSpeedInput").value;
-            if (minSpeed > maxSpeed) {
-              document.getElementById("maxSpeedInput").value = minSpeed;
-            }
-            if (maxSpeed < 0) {
-              document.getElementById("maxSpeedInput").value = 0;
-            }
-            let minAngle =
-              Number(document.getElementById("minAngleInput").value) + 90;
-            if (minAngle < 90) {
-              document.getElementById("minAngleInput").value = 0;
-            }
-            if (minAngle > 449) {
-              document.getElementById("minAngleInput").value = 359;
-            }
-            let maxAngle =
-              Number(document.getElementById("maxAngleInput").value) + 90;
-            if (maxAngle < 91) {
-              document.getElementById("maxAngleInput").value = 1;
-            }
-            if (maxAngle > 450) {
-              document.getElementById("maxAngleInput").value = 360;
-            }
-            if (minAngle > maxAngle) {
-              document.getElementById("maxAngleInput").value =
-                minAngle - 90 + 1;
-            }
+            updateValues();
             bngApi.engineLua(
               "extensions.windsOfChange.updateWind(" +
                 minSpeed +
@@ -91,12 +94,25 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 ")"
             );
           }, 50);
+        }
+
+        scope.startWind = function (event) {
+          if (windLoop) {
+            return;
+          }
+          startWind();
         };
 
         scope.endWind = function (event) {
           clearInterval(windLoop);
           windLoop = null;
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
+        };
+
+        scope.refreshWind = function (event) {
+          clearInterval(windLoop);
+          bngApi.engineLua("extensions.windsOfChange.refreshWind()");
+          startWind();
         };
 
         scope.$on("ReceiveData", function (_, data) {
