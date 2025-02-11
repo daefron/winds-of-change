@@ -48,12 +48,37 @@ angular.module("beamng.apps").directive("windsOfChange", [
             return;
           }
           windLoop = setInterval(() => {
-            const minSpeed = document.getElementById("minSpeedInput").value;
-            const maxSpeed = document.getElementById("maxSpeedInput").value;
+            let minSpeed = document.getElementById("minSpeedInput").value;
+            if (minSpeed < 0) {
+              document.getElementById("minSpeedInput").value = 0;
+            }
+            let maxSpeed = document.getElementById("maxSpeedInput").value;
+            if (minSpeed > maxSpeed) {
+              document.getElementById("maxSpeedInput").value = minSpeed;
+            }
+            if (maxSpeed < 0) {
+              document.getElementById("maxSpeedInput").value = 0;
+            }
             let minAngle =
               Number(document.getElementById("minAngleInput").value) + 90;
+            if (minAngle < 90) {
+              document.getElementById("minAngleInput").value = 0;
+            }
+            if (minAngle > 449) {
+              document.getElementById("minAngleInput").value = 359;
+            }
             let maxAngle =
               Number(document.getElementById("maxAngleInput").value) + 90;
+            if (maxAngle < 91) {
+              document.getElementById("maxAngleInput").value = 1;
+            }
+            if (maxAngle > 450) {
+              document.getElementById("maxAngleInput").value = 360;
+            }
+            if (minAngle > maxAngle) {
+              document.getElementById("maxAngleInput").value =
+                minAngle - 90 + 1;
+            }
             bngApi.engineLua(
               "extensions.windsOfChange.updateWind(" +
                 minSpeed +
