@@ -17,7 +17,7 @@ local wind = {
     }
 }
 
-local function updateWind(minSpeed, maxSpeed)
+local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle)
     local function changeDirection()
         local gapDiff = (math.random() - 0.5) / 100
         local newGap = gapDiff + wind.direction.gap
@@ -31,11 +31,18 @@ local function updateWind(minSpeed, maxSpeed)
             newGap = newGap * 0.9
         end
         local newAngle = wind.direction.value + newChange
-        if newAngle > 360 then
-            newAngle = newAngle - 360
-        end
-        if newAngle < 0 then
-            newAngle = 360 - newAngle
+        if newAngle > maxAngle then
+            if maxAngle == 360 and minAngle == 0 then
+                newAngle = newAngle - 360
+            else
+                newAngle = newAngle - 1
+            end
+        elseif newAngle < minAngle then
+            if minAngle == 0 and maxAngle == 360 then
+                newAngle = 360 - newAngle
+            else
+                newAngle = newAngle + 1
+            end
         end
         wind.direction.gap = newGap
         wind.direction.change = newChange
@@ -92,10 +99,6 @@ local function stopWind()
             gap = 0
         }
     }
-end
-
-local function log(info)
-    log('I', 'log', info)
 end
 
 local function onExtensionLoaded()
