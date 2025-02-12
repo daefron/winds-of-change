@@ -6,7 +6,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
       scope: true,
 
       link: function (scope, element, attrs) {
-        var windLoop;
+        let windLoop;
         bngApi.engineLua("extensions.windsOfChange.retrieveStoredLoop()");
         scope.$on("RetrieveLoop", function (_, data) {
           windLoop = data;
@@ -16,7 +16,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.windDirection = 0;
         scope.windSpeed = 0;
         scope.direction = scope.windDirection + scope.carDirection;
-
         scope.animationLines = [];
 
         const windLines = document.getElementById("windLineHolder");
@@ -231,6 +230,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.direction -= 360;
           }
         });
+
         scope.$on("RetrieveSettings", function (_, data) {
           const savedSettings = data.split(":");
           const minSpeed = savedSettings[0];

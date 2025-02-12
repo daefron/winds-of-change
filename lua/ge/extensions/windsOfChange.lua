@@ -87,10 +87,13 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, gapMult)
 
 end
 
+local storedLoop = false
+
 local function stopWind()
     be:queueAllObjectLua('obj:setWind(0,0,0)')
     local data = "0:90"
     guihooks.trigger('ReceiveData', data)
+    storedLoop = false
 end
 
 local function refreshWind()
@@ -123,8 +126,6 @@ end
 local function retrieveStoredSettings()
     guihooks.trigger('RetrieveSettings', storedSettings)
 end
-
-local storedLoop = false
 
 local function storeLoop(a)
     storedLoop = a
