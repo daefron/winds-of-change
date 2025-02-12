@@ -12,10 +12,21 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.windSpeed = 0;
         scope.direction = scope.windDirection + scope.carDirection;
 
+        scope.animationLines = [];
+
         const windLines = document.getElementById("windLineHolder");
 
         var streamsList = ["sensors"];
         StreamsManager.add(streamsList);
+
+        let frame = 0;
+        const animationSettings = {
+          lineCount: 18,
+          radius: 110,
+          spawnDistance: 40,
+          frameSpeed: 1,
+          moveDistance: 0,
+        };
 
         scope.$on("streamsUpdate", function (event, streams) {
           if (!streams.sensors) {
@@ -34,15 +45,75 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.direction -= 360;
           }
           windLines.style.transform = "rotate(" + scope.direction + "deg)";
-          windLines.style.margin = -200 * (1 - scope.windSpeed / 200) + "px";
+
+          if (scope.windSpeed / 20 < animationSettings.spawnDistance / 2) {
+            animationSettings.frameSpeed = scope.windSpeed / 20;
+          } else {
+            animationSettings.frameSpeed = animationSettings.spawnDistance / 2;
+          }
+          if (scope.windSpeed * 1.8 > 20 && scope.windSpeed * 1.8 < 60) {
+            animationSettings.moveDistance = scope.windSpeed * 1.8;
+          } else {
+            if (scope.windSpeed * 1.8 < 20) {
+              animationSettings.moveDistance = 20;
+            } else {
+              animationSettings.moveDistance = 60;
+            }
+          }
+
+          if (frame > animationSettings.spawnDistance) {
+            frame = 0;
+          }
+          frame += 1 * animationSettings.frameSpeed;
+          scope.animationLines = makeLines(-300 + frame, 200 + frame);
+          function makeLines(min, max) {
+            let lineHolder = [];
+            for (let i = min; i <= max; i += animationSettings.spawnDistance) {
+              lineHolder.push(lineMaker(i));
+              function lineMaker(height) {
+                let lineArray = [];
+                for (let i = animationSettings.lineCount / 2; i >= 0; i--) {
+                  lineArray.push((i - 0.9999) * -1);
+                }
+                for (let i = 1; i <= animationSettings.lineCount / 2; i++) {
+                  lineArray.push(i - 0.9999);
+                }
+                class Dash {
+                  constructor(xPos) {
+                    this.X = xPos * 30;
+                    this.Y = height * 2;
+                    this.distance = Math.sqrt(this.X ** 2 + (this.Y / 1) ** 2);
+                    this.style = {
+                      width: 3,
+                      height: 15,
+                      backgroundColor: "white",
+                      position: "absolute",
+                      left: this.X + 147,
+                      marginTop: this.Y + 50,
+                      marginLeft:
+                        this.distance < animationSettings.radius
+                          ? this.X > 0
+                            ? (1 -
+                                this.distance ** 2 /
+                                  animationSettings.radius ** 2) *
+                              animationSettings.moveDistance
+                            : (1 -
+                                this.distance ** 2 /
+                                  animationSettings.radius ** 2) *
+                              -animationSettings.moveDistance
+                          : 0,
+                    };
+                  }
+                }
+                return Array.from(lineArray, (value) => new Dash(value));
+              }
+            }
+            return lineHolder;
+          }
         });
 
         scope.$on("destroy", function () {
           StreamsManager.remove(streamsList);
-          if (windLoop) {
-            clearInterval(windLoop);
-            windLoop = null;
-          }
         });
 
         let windLoop;
@@ -110,7 +181,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
         };
 
-        let settings = document.getElementById("toHide");
+        let settings = document.getElementById("settings");
         settings.style.display = "none";
         scope.hideSettings = function (event) {
           if (settings.style.display == "none") {

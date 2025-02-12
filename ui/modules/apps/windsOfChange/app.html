@@ -8,16 +8,18 @@
   <div id="windsOfChangeContainer">
     <div class="visualHolder">
       <div id="windLineHolder">
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
-        <div class="windLine"></div>
+        <div ng-repeat="line in animationLines">
+          <div
+            ng-repeat="dash in line"
+            style="width:{{ dash.style.width }}px;
+             height:{{ dash.style.height }}px; 
+             background-color:{{ dash.style.backgroundColor }};
+             position:{{ dash.style.position }}; 
+             left:{{ dash.style.left }}px; 
+             margin-top:{{ dash.style.marginTop }}px; 
+             margin-left:{{ dash.style.marginLeft }}px"
+          ></div>
+        </div>
       </div>
       <svg class="arrow" viewBox="0 -1080 1080 1080">
         <path
@@ -25,7 +27,7 @@
           d="m200-120-40-40 320-720 320 720-40 40-280-120zm84-124 196-84 196 84-196-440zm196-84"
         />
       </svg>
-      <div id="toHide">
+      <div id="settings">
         <div class="inputHolder">
           <span class="tag">Speed range:</span>
           <input
@@ -65,8 +67,10 @@
         <md-icon class="material-icons settingsIcon">settings</md-icon>
       </md-button>
     </div>
-    <span class="stat">Wind speed: {{ windSpeed }} km/h</span>
-    <span class="stat">Wind angle: {{ windDirection }} °</span>
+    <div class="statHolder">
+      <span class="stat">Speed: {{ windSpeed }} km/h</span>
+      <span class="stat">Angle: {{ windDirection }} °</span>
+    </div>
     <div class="buttonHolder">
       <md-button class="button" ng-click="startWind()">
         <md-icon class="material-icons">play_arrow</md-icon>
