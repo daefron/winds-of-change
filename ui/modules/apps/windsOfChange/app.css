@@ -61,6 +61,13 @@
   margin: 10px;
   margin-bottom: 2px;
 }
+.inputHolder,
+.inputHolderWide,
+.buttonHolder {
+  margin: 5px;
+  display: flex;
+  align-items: center;
+}
 .inputHolder > .tag {
   width: 100px;
   margin-right: 10px;
@@ -69,11 +76,13 @@
   width: 60px;
   height: 30px;
 }
-.inputHolder,
-.buttonHolder {
-  margin: 5px;
-  display: flex;
-  align-items: center;
+.inputHolderWide > .tag {
+  width: 150px;
+  margin-right: 10px;
+}
+.inputHolderWide > input {
+  width: 60px;
+  height: 30px;
 }
 .buttonHolder {
   justify-content: space-between;

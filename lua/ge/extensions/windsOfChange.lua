@@ -17,19 +17,19 @@ local wind = {
     }
 }
 
-local storedSettings = "0:40:0:360:10"
+local storedSettings = "0:40:0:360:10:10"
 
-local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, gapMult)
+local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult)
     local function changeDirection()
-        local gapDiff = ((math.random() - 0.5) / 100) * (gapMult / 10)
+        local gapDiff = ((math.random() - 0.5) / 100) * (angleGapMult / 10)
         local newGap = gapDiff + wind.direction.gap
         local newChange = wind.direction.change + newGap
-        if newChange > 0.1 * (gapMult / 10) then
-            newChange = 0.1 * (gapMult / 10)
+        if newChange > 0.1 * (angleGapMult / 10) then
+            newChange = 0.1 * (angleGapMult / 10)
             newGap = newGap * 0.9
         end
-        if newChange < -0.1 * (gapMult / 10) then
-            newChange = -0.1 * (gapMult / 10)
+        if newChange < -0.1 * (angleGapMult / 10) then
+            newChange = -0.1 * (angleGapMult / 10)
             newGap = newGap * 0.9
         end
         local newAngle = wind.direction.value + newChange
@@ -51,15 +51,15 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, gapMult)
         wind.direction.value = newAngle
     end
     local function changeSpeed()
-        local gapDiff = ((math.random() - 0.5) / 100) * (gapMult / 10)
+        local gapDiff = ((math.random() - 0.5) / 100) * (speedGapMult / 10)
         local newGap = gapDiff + wind.speed.gap
         local newChange = wind.speed.change + newGap
-        if newChange > 0.05 * (gapMult / 10) then
-            newChange = 0.05 * (gapMult / 10)
+        if newChange > 0.05 * (speedGapMult / 10) then
+            newChange = 0.05 * (speedGapMult / 10)
             newGap = newGap * 0.9
         end
-        if newChange < -0.05 * (gapMult / 10) then
-            newChange = -0.05 * (gapMult / 10)
+        if newChange < -0.05 * (speedGapMult / 10) then
+            newChange = -0.05 * (speedGapMult / 10)
             newGap = newGap * 0.9
         end
         local newSpeed = wind.speed.value + newChange
@@ -120,8 +120,8 @@ local function onExtensionUnloaded()
     log('D', 'onExtensionUnloaded', "Called")
 end
 
-local function storeSettings(a, b, c, d, e)
-    storedSettings = a .. ":" .. b .. ":" .. c .. ":" .. d .. ":" .. e
+local function storeSettings(a, b, c, d, e, f)
+    storedSettings = a .. ":" .. b .. ":" .. c .. ":" .. d .. ":" .. e .. ":" .. f
 end
 
 local function retrieveStoredSettings()

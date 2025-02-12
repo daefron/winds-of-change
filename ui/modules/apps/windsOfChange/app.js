@@ -140,7 +140,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           clearInterval(windLoop);
         });
 
-        let minSpeed, maxSpeed, minAngle, maxAngle, gapMult;
+        let minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult;
         function updateSettings() {
           if (!document.getElementById("minSpeedInput")) {
             return;
@@ -149,7 +149,10 @@ angular.module("beamng.apps").directive("windsOfChange", [
           const maxSpeedInput = document.getElementById("maxSpeedInput");
           const minAngleInput = document.getElementById("minAngleInput");
           const maxAngleInput = document.getElementById("maxAngleInput");
-          const gapMultInput = document.getElementById("gapMultInput");
+          const speedGapMultInput =
+            document.getElementById("speedGapMultInput");
+          const angleGapMultInput =
+            document.getElementById("angleGapMultInput");
           minSpeed = Number(minSpeedInput.value);
           maxSpeed = Number(maxSpeedInput.value);
           if (minSpeed >= maxSpeed) {
@@ -174,7 +177,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (maxAngle > 360) {
             maxAngleInput.value = 360;
           }
-          gapMult = Number(gapMultInput.value);
+          speedGapMult = Number(speedGapMultInput.value);
+          angleGapMult = Number(angleGapMultInput.value);
           let storedValues =
             minSpeed +
             "," +
@@ -184,7 +188,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
             "," +
             maxAngle +
             "," +
-            gapMult;
+            speedGapMult +
+            "," +
+            angleGapMult;
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" + storedValues + ")"
           );
@@ -203,7 +209,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 "," +
                 maxAngle +
                 "," +
-                gapMult +
+                speedGapMult +
+                "," +
+                angleGapMult +
                 ")"
             );
           }, 200);
@@ -256,12 +264,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
           const maxSpeed = savedSettings[1];
           const minAngle = savedSettings[2];
           const maxAngle = savedSettings[3];
-          const gapMult = savedSettings[4];
+          const speedGapMult = savedSettings[4];
+          const angleGapMult = savedSettings[5];
           document.getElementById("minSpeedInput").value = minSpeed;
           document.getElementById("maxSpeedInput").value = maxSpeed;
           document.getElementById("minAngleInput").value = minAngle;
           document.getElementById("maxAngleInput").value = maxAngle;
-          document.getElementById("gapMultInput").value = gapMult;
+          document.getElementById("speedGapMultInput").value = speedGapMult;
+          document.getElementById("angleGapMultInput").value = angleGapMult;
         });
       },
     };
