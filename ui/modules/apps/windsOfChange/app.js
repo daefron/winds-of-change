@@ -3,10 +3,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
     return {
       templateUrl: "/ui/modules/apps/windsOfChange/app.html",
       replace: true,
-      restrict: "EA",
       scope: true,
 
       link: function (scope, element, attrs) {
+        var windLoop;
+        bngApi.engineLua("extensions.windsOfChange.retrieveStoredLoop()");
+        scope.$on("RetrieveLoop", function (_, data) {
+          windLoop = data;
+        });
+
         scope.carDirection = 0;
         scope.windDirection = 0;
         scope.windSpeed = 0;
@@ -111,14 +116,18 @@ angular.module("beamng.apps").directive("windsOfChange", [
             return lineHolder;
           }
         });
-
         scope.$on("destroy", function () {
           StreamsManager.remove(streamsList);
+          clearInterval(windLoop);
         });
 
-        let windLoop;
         let minSpeed, maxSpeed, minAngle, maxAngle, gapMult;
         function updateValues() {
+          if (!document.getElementById("minSpeedInput")) {
+            {
+              return;
+            }
+          }
           minSpeed = Number(document.getElementById("minSpeedInput").value);
           maxSpeed = Number(document.getElementById("maxSpeedInput").value);
           if (minSpeed >= maxSpeed) {
@@ -144,6 +153,19 @@ angular.module("beamng.apps").directive("windsOfChange", [
             document.getElementById("maxAngleInput").value = 360;
           }
           gapMult = Number(document.getElementById("gapMultInput").value);
+          let storedValues =
+            minSpeed +
+            "," +
+            maxSpeed +
+            "," +
+            minAngle +
+            "," +
+            maxAngle +
+            "," +
+            gapMult;
+          bngApi.engineLua(
+            "extensions.windsOfChange.storeSettings(" + storedValues + ")"
+          );
         }
         function startWind() {
           windLoop = setInterval(() => {
@@ -161,7 +183,10 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 gapMult +
                 ")"
             );
-          }, 50);
+          }, 200);
+          bngApi.engineLua(
+            "extensions.windsOfChange.storeLoop(" + windLoop + ")"
+          );
         }
 
         scope.startWind = function (event) {
@@ -205,6 +230,19 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (scope.direction > 360) {
             scope.direction -= 360;
           }
+        });
+        scope.$on("RetrieveSettings", function (_, data) {
+          const savedSettings = data.split(":");
+          const minSpeed = savedSettings[0];
+          const maxSpeed = savedSettings[1];
+          const minAngle = savedSettings[2];
+          const maxAngle = savedSettings[3];
+          const gapMult = savedSettings[4];
+          document.getElementById("minSpeedInput").value = minSpeed;
+          document.getElementById("maxSpeedInput").value = maxSpeed;
+          document.getElementById("minAngleInput").value = minAngle;
+          document.getElementById("maxAngleInput").value = maxAngle;
+          document.getElementById("gapMultInput").value = gapMult;
         });
       },
     };
