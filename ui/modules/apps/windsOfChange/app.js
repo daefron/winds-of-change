@@ -89,7 +89,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
                     this.distance = Math.sqrt(this.X ** 2 + (this.Y / 1) ** 2);
                     this.style = {
                       width: 3,
-                      height: 15,
+                      height: 10,
                       backgroundColor: "white",
                       position: "absolute",
                       left: this.X + 147,
