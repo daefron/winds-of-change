@@ -117,7 +117,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         });
 
         let windLoop;
-        let minSpeed, maxSpeed, minAngle, maxAngle;
+        let minSpeed, maxSpeed, minAngle, maxAngle, gapMult;
         function updateValues() {
           minSpeed = Number(document.getElementById("minSpeedInput").value);
           maxSpeed = Number(document.getElementById("maxSpeedInput").value);
@@ -143,6 +143,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (maxAngle > 360) {
             document.getElementById("maxAngleInput").value = 360;
           }
+          gapMult = Number(document.getElementById("gapMultInput").value);
         }
         function startWind() {
           windLoop = setInterval(() => {
@@ -156,6 +157,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 minAngle +
                 "," +
                 maxAngle +
+                "," +
+                gapMult +
                 ")"
             );
           }, 50);

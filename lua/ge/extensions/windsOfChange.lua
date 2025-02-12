@@ -17,17 +17,17 @@ local wind = {
     }
 }
 
-local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle)
+local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, gapMult)
     local function changeDirection()
-        local gapDiff = (math.random() - 0.5) / 100
+        local gapDiff = ((math.random() - 0.5) / 100) * (gapMult / 10)
         local newGap = gapDiff + wind.direction.gap
         local newChange = wind.direction.change + newGap
-        if newChange > 0.1 then
-            newChange = 0.1
+        if newChange > 0.1 * (gapMult / 10) then
+            newChange = 0.1 * (gapMult / 10)
             newGap = newGap * 0.9
         end
-        if newChange < -0.1 then
-            newChange = -0.1
+        if newChange < -0.1 * (gapMult / 10) then
+            newChange = -0.1 * (gapMult / 10)
             newGap = newGap * 0.9
         end
         local newAngle = wind.direction.value + newChange
@@ -49,15 +49,15 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle)
         wind.direction.value = newAngle
     end
     local function changeSpeed()
-        local gapDiff = (math.random() - 0.5) / 100
+        local gapDiff = ((math.random() - 0.5) / 100) * (gapMult / 10)
         local newGap = gapDiff + wind.speed.gap
         local newChange = wind.speed.change + newGap
-        if newChange > 0.05 then
-            newChange = 0.05
+        if newChange > 0.05 * (gapMult / 10) then
+            newChange = 0.05 * (gapMult / 10)
             newGap = newGap * 0.9
         end
-        if newChange < -0.05 then
-            newChange = -0.05
+        if newChange < -0.05 * (gapMult / 10) then
+            newChange = -0.05 * (gapMult / 10)
             newGap = newGap * 0.9
         end
         local newSpeed = wind.speed.value + newChange
