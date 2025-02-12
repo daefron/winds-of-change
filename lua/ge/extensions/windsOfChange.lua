@@ -11,7 +11,7 @@ local wind = {
         gap = 0
     },
     speed = {
-        value = randomValue(65),
+        value = randomValue(40),
         change = 0,
         gap = 0
     }
@@ -62,10 +62,10 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle)
         end
         local newSpeed = wind.speed.value + newChange
         if newSpeed > maxSpeed then
-            newSpeed = maxSpeed
+            newSpeed = maxSpeed - 0.001
         end
         if newSpeed < minSpeed then
-            newSpeed = minSpeed
+            newSpeed = minSpeed + 0.001
         end
         wind.speed.gap = newGap
         wind.speed.change = newChange

@@ -40,7 +40,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.carDirection += 360;
           }
           scope.direction =
-            Number(scope.windDirection) - Number(scope.carDirection) + 90;
+            Number(scope.windDirection) - Number(scope.carDirection);
           if (scope.direction > 360) {
             scope.direction -= 360;
           }
@@ -120,34 +120,28 @@ angular.module("beamng.apps").directive("windsOfChange", [
         let minSpeed, maxSpeed, minAngle, maxAngle;
         function updateValues() {
           minSpeed = Number(document.getElementById("minSpeedInput").value);
-          if (minSpeed < 0) {
-            document.getElementById("minSpeedInput").value = 0;
-          }
           maxSpeed = Number(document.getElementById("maxSpeedInput").value);
-          if (maxSpeed < 0) {
-            document.getElementById("maxSpeedInput").value = 0;
-          }
-          if (minSpeed > maxSpeed) {
+          if (minSpeed >= maxSpeed) {
             document.getElementById("maxSpeedInput").value = minSpeed;
+            document.getElementById("minSpeedInput").value = maxSpeed;
           }
-          minAngle =
-            Number(document.getElementById("minAngleInput").value) + 90;
-          if (minAngle < 90) {
+          minAngle = Number(document.getElementById("minAngleInput").value);
+          maxAngle = Number(document.getElementById("maxAngleInput").value);
+          if (minAngle >= maxAngle) {
+            document.getElementById("maxAngleInput").value = minAngle;
+            document.getElementById("minAngleInput").value = maxAngle;
+          }
+          if (minAngle < 0) {
             document.getElementById("minAngleInput").value = 0;
           }
-          if (minAngle > 449) {
-            document.getElementById("minAngleInput").value = 359;
+          if (minAngle > 360) {
+            document.getElementById("minAngleInput").value = 360;
           }
-          maxAngle =
-            Number(document.getElementById("maxAngleInput").value) + 90;
-          if (maxAngle < 91) {
-            document.getElementById("maxAngleInput").value = 1;
+          if (maxAngle < 0) {
+            document.getElementById("maxAngleInput").value = 0;
           }
-          if (maxAngle > 450) {
+          if (maxAngle > 360) {
             document.getElementById("maxAngleInput").value = 360;
-          }
-          if (minAngle > maxAngle) {
-            document.getElementById("maxAngleInput").value = minAngle - 90 + 1;
           }
         }
         function startWind() {
@@ -194,14 +188,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.$on("ReceiveData", function (_, data) {
           const newSpeed = data.split(":")[0];
           const newDirection = data.split(":")[1];
-          scope.windSpeed = Number.parseFloat(newSpeed).toFixed(2);
+          scope.windSpeed = Number.parseFloat(newSpeed).toFixed(1);
           scope.windDirection = Number.parseFloat(
             Number(newDirection) - 90
-          ).toFixed(2);
+          ).toFixed(1);
           if (scope.windDirection < 0) {
             scope.windDirection = Number.parseFloat(
               Number.parseFloat(scope.windDirection) + 360
-            ).toFixed(2);
+            ).toFixed(1);
           }
           scope.direction =
             Number(scope.windDirection) - Number(scope.carDirection) + 180;
