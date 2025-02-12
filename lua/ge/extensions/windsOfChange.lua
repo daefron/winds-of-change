@@ -76,8 +76,10 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, gapMult)
     local radians = math.pi / 180
     local xcoeff = math.sin(wind.direction.value * radians)
     local ycoeff = math.cos(wind.direction.value * radians)
-    be:queueAllObjectLua('obj:setWind(' .. tostring(xcoeff * wind.speed.value) .. "," ..
-                             tostring(ycoeff * wind.speed.value) .. ",0)")
+    log('D', 'onExtensionUnloaded', xcoeff)
+    log('D', 'onExtensionUnloaded', ycoeff)
+    be:queueAllObjectLua('obj:setWind(' .. tostring(xcoeff * (wind.speed.value / 3.57142857143)) .. "," ..
+                             tostring(ycoeff * (wind.speed.value / 3.57142857143)) .. ",0)")
 
     local speedData = wind.speed.value
     local directionData = wind.direction.value
