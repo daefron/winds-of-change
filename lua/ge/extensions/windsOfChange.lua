@@ -16,7 +16,8 @@ local wind = {
         gap = 0
     }
 }
-local storedSettings
+
+local storedSettings = "0:40:0:360:10"
 
 local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, gapMult)
     local function changeDirection()
