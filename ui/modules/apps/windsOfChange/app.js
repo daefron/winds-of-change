@@ -148,26 +148,31 @@ angular.module("beamng.apps").directive("windsOfChange", [
                     this.X = xPos * 30;
                     this.Y = height * 2;
                     this.distance = Math.sqrt(this.X ** 2 + (this.Y / 1) ** 2);
-                    this.style = {
-                      width: 3,
-                      height: 10,
-                      backgroundColor: "white",
-                      position: "absolute",
-                      left: this.X + 147,
-                      marginTop: this.Y + 50,
-                      marginLeft:
-                        this.distance < animationSettings.radius
-                          ? this.X > 0
-                            ? (1 -
-                                this.distance ** 2 /
-                                  animationSettings.radius ** 2) *
-                              animationSettings.moveDistance
-                            : (1 -
-                                this.distance ** 2 /
-                                  animationSettings.radius ** 2) *
-                              -animationSettings.moveDistance
-                          : 0,
-                    };
+                    this.style =
+                      "width: 3; " +
+                        "height: 10; " +
+                        "backgroundColor: white; " +
+                        "position: absolute; " +
+                        "left: " +
+                        this.X +
+                        147 +
+                        "; marginTop: " +
+                        this.Y +
+                        50 +
+                        "; marginLeft: " +
+                        this.distance <
+                      animationSettings.radius
+                        ? this.X > 0
+                          ? (1 -
+                              this.distance ** 2 /
+                                animationSettings.radius ** 2) *
+                            animationSettings.moveDistance
+                          : (1 -
+                              this.distance ** 2 /
+                                animationSettings.radius ** 2) *
+                            -animationSettings.moveDistance
+                        : 0;
+                    +";";
                   }
                 }
                 return Array.from(lineArray, (value) => new Dash(value));
@@ -221,6 +226,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
           speedGapMult = Number(speedGapMultInput.value);
           angleGapMult = Number(angleGapMultInput.value);
+          const selectedPreset = document.getElementById("presetSelect").value;
           let storedValues =
             minSpeed +
             "," +
@@ -232,7 +238,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
             "," +
             speedGapMult +
             "," +
-            angleGapMult;
+            angleGapMult +
+            "," +
+            selectedPreset;
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" + storedValues + ")"
           );
