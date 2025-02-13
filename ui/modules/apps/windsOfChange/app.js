@@ -38,6 +38,48 @@ angular.module("beamng.apps").directive("windsOfChange", [
           moveDistance: 0,
         };
 
+        const presets = {
+          lightBreeze: {
+            name: "Light breeze",
+            minSpeed: 5,
+            maxSpeed: 20,
+            minAngle: 0,
+            maxAngle: 360,
+            speedGapMult: 5,
+            angleGapMult: 5,
+          },
+          moderate: {
+            name: "Moderate breeze",
+            minSpeed: 20,
+            maxSpeed: 35,
+            minAngle: 0,
+            maxAngle: 360,
+            speedGapMult: 10,
+            angleGapMult: 10,
+          },
+          strongWinds: {
+            name: "Stong breeze",
+            minSpeed: 35,
+            maxSpeed: 55,
+            minAngle: 0,
+            maxAngle: 360,
+            speedGapMult: 15,
+            angleGapMult: 15,
+          },
+          tornado: {
+            name: "Tornado",
+            minSpeed: 200,
+            maxSpeed: 350,
+            minAngle: 0,
+            maxAngle: 360,
+            speedGapMult: 1000,
+            angleGapMult: 1000,
+          },
+        };
+
+        let selectedPreset = "lightBreeze";
+        scope.preset = presets[selectedPreset];
+
         scope.$on("streamsUpdate", function (event, streams) {
           if (!streams.sensors) {
             return;

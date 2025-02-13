@@ -29,13 +29,25 @@
       </svg>
       <div id="settings">
         <div class="inputHolder">
+          <span class="tag">Preset:</span>
+          <select
+            id="presetSelect"
+            name="presectSelect"
+            class="input input-light"
+          >
+            <option ng-repeat="preset in presets" value="{{preset.name}}">
+              {{preset.name}}
+            </option>
+          </select>
+        </div>
+        <div class="inputHolder">
           <span class="tag">Speed range:</span>
           <input
             id="minSpeedInput"
             class="input input-light"
             type="number"
             min="0"
-            value="0"
+            value="{{preset.minSpeed}}"
           />
           <span>&nbsp;-&nbsp;</span>
           <input
@@ -43,7 +55,7 @@
             class="input input-light"
             type="number"
             min="0"
-            value="40"
+            value="{{preset.maxSpeed}}"
           />
           <span class="speedType">&nbsp;km/h</span>
         </div>
@@ -55,7 +67,7 @@
             type="number"
             min="0"
             max="360"
-            value="0"
+            value="{{preset.minAngle}}"
           />
           <span>&nbsp;-&nbsp;</span>
           <input
@@ -64,7 +76,7 @@
             type="number"
             min="0"
             max="360"
-            value="360"
+            value="{{preset.maxAngle}}"
           />
           <span>&nbsp;°</span>
         </div>
@@ -75,7 +87,7 @@
             class="input input-light"
             type="number"
             min="1"
-            value="10"
+            value="{{preset.speedGapMult}}"
           />
         </div>
         <div class="inputHolderWide">
@@ -85,7 +97,7 @@
             class="input input-light"
             type="number"
             min="1"
-            value="10"
+            value="{{preset.angleGapMult}}"
           />
         </div>
       </div>
