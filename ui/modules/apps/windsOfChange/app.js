@@ -341,12 +341,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
           const maxAngle = savedSettings[3];
           const speedGapMult = savedSettings[4];
           const angleGapMult = savedSettings[5];
+          const selectedPreset = savedSettings[6];
           document.getElementById("minSpeedInput").value = minSpeed;
           document.getElementById("maxSpeedInput").value = maxSpeed;
           document.getElementById("minAngleInput").value = minAngle;
           document.getElementById("maxAngleInput").value = maxAngle;
           document.getElementById("speedGapMultInput").value = speedGapMult;
           document.getElementById("angleGapMultInput").value = angleGapMult;
+          document.getElementById("presetSelect").value = selectedPreset;
         });
       },
     };

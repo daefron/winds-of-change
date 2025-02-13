@@ -17,7 +17,7 @@ local wind = {
     }
 }
 
-local storedSettings = "0:40:0:360:10:10"
+local storedSettings = "0:40:0:360:10:10:lightBreeze"
 
 local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult)
     local function changeDirection()
@@ -120,8 +120,8 @@ local function onExtensionUnloaded()
     log('D', 'onExtensionUnloaded', "Called")
 end
 
-local function storeSettings(a, b, c, d, e, f)
-    storedSettings = a .. ":" .. b .. ":" .. c .. ":" .. d .. ":" .. e .. ":" .. f
+local function storeSettings(a, b, c, d, e, f, g)
+    storedSettings = a .. ":" .. b .. ":" .. c .. ":" .. d .. ":" .. e .. ":" .. f .. ":" .. g
 end
 
 local function retrieveStoredSettings()
