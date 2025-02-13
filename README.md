@@ -1,4 +1,4 @@
-## [Repo here](https://sorrynotareallink)
+## [Mod repo here](https://www.beamng.com/resources/winds-of-change.33596/)
 
 ## About this project
 
@@ -12,5 +12,5 @@ Wind is a very important part of driving and a realistic depiction of it was see
 
 ### Built With:
 
-- [Angular]([https://react.dev/](https://angular.dev/))
+- [Angular](https://angular.dev/)
 - [Lua](https://www.lua.org/)
