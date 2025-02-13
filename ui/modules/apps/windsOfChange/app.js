@@ -220,15 +220,25 @@ angular.module("beamng.apps").directive("windsOfChange", [
           );
         }
 
-        scope.startWind = function (event) {
+        scope.startWind = function () {
           if (windLoop) {
-            bngApi.engineLua("extensions.windsOfChange.refreshWind()");
+            bngApi.engineLua(
+              "extensions.windsOfChange.refreshWind(" +
+                minAngle +
+                "," +
+                maxAngle +
+                "," +
+                minSpeed +
+                "," +
+                maxSpeed +
+                ")"
+            );
             return;
           }
           startWind();
         };
 
-        scope.endWind = function (event) {
+        scope.endWind = function () {
           clearInterval(windLoop);
           windLoop = null;
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
@@ -236,7 +246,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         let settings = document.getElementById("settings");
         settings.style.display = "none";
-        scope.hideSettings = function (event) {
+        scope.hideSettings = function () {
           if (settings.style.display == "none") {
             settings.style.display = "flex";
           } else {

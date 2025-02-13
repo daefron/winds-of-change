@@ -97,15 +97,15 @@ local function stopWind()
     storedLoop = false
 end
 
-local function refreshWind()
+local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
     wind = {
         direction = {
-            value = randomValue(360),
+            value = randomValue((maxAngle - minAngle)) + minAngle,
             change = 0,
             gap = 0
         },
         speed = {
-            value = randomValue(65),
+            value = randomValue(maxSpeed - minSpeed) + minSpeed,
             change = 0,
             gap = 0
         }
