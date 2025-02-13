@@ -23,7 +23,7 @@
   position: absolute;
   flex-direction: column;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 .settingsButton {
   position: absolute;
@@ -68,10 +68,15 @@
   display: flex;
   align-items: center;
 }
+.inputHolderWide {
+  justify-content: space-between;
+}
+
 .inputHolder > .tag {
   width: 100px;
   margin-right: 10px;
 }
+.inputHolderWide > input,
 .inputHolder > input {
   width: 60px;
   height: 30px;
@@ -84,8 +89,14 @@
   width: 60px;
   height: 30px;
 }
+#settings > button {
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
 .buttonHolder {
   justify-content: space-between;
+  margin-right: 10px;
 }
 .buttonHolder > .button {
   width: calc(50% - 5px);

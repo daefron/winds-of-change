@@ -304,6 +304,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
         };
 
+        scope.resetSettings = function () {
+          document.getElementById("minSpeedInput").value = 0;
+          document.getElementById("maxSpeedInput").value = 40;
+          document.getElementById("minAngleInput").value = 0;
+          document.getElementById("maxAngleInput").value = 360;
+          document.getElementById("speedGapMultInput").value = 10;
+          document.getElementById("angleGapMultInput").value = 10;
+        };
+
         scope.$on("ReceiveData", function (_, data) {
           const newSpeed = data.split(":")[0];
           const newDirection = data.split(":")[1];
