@@ -17,7 +17,7 @@ local wind = {
     }
 }
 
-local storedSettings = "0:0:20:0:360:5:5"
+local storedSettings = {0, 0, 20, 0, 360, 5, 5, false}
 
 local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult)
     local function changeDirection()
@@ -83,7 +83,7 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
 
     local speedData = wind.speed.value
     local directionData = wind.direction.value
-    local data = speedData .. ":" .. directionData
+    local data = {speedData , directionData}
     guihooks.trigger('ReceiveData', data)
 
 end
@@ -92,7 +92,7 @@ local storedLoop = false
 
 local function stopWind()
     be:queueAllObjectLua('obj:setWind(0,0,0)')
-    local data = "0:90"
+    local data = {0,90}
     guihooks.trigger('ReceiveData', data)
     storedLoop = false
 end
@@ -120,12 +120,13 @@ local function onExtensionUnloaded()
     log('D', 'onExtensionUnloaded', "Called")
 end
 
-local function storeSettings(a, b, c, d, e, f, g)
-    storedSettings = a .. ":" .. b .. ":" .. c .. ":" .. d .. ":" .. e .. ":" .. f .. ":" .. g
+local function storeSettings(a, b, c, d, e, f, g, h)
+    storedSettings = {a, b, c, d, e, f, g, h}
 end
 
 local function retrieveStoredSettings()
     guihooks.trigger('RetrieveSettings', storedSettings)
+
 end
 
 local function storeLoop(a)

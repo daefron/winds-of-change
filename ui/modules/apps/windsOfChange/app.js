@@ -22,6 +22,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         scope.animationLines = [];
 
+        scope.settingsOpen = false;
+
         const windLines = document.getElementById("windLineHolder");
 
         var streamsList = ["sensors"];
@@ -109,13 +111,16 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.values.carDirection += 360;
           }
           scope.values.direction =
-            Number(scope.values.windDirection) -
-            Number(scope.values.carDirection);
+          Number(scope.values.windDirection) -
+          Number(scope.values.carDirection);
           if (scope.values.direction > 360) {
             scope.values.direction -= 360;
           }
           windLines.style.transform =
-            "rotate(" + scope.values.direction + "deg)";
+          "rotate(" + scope.values.direction + "deg)";
+          if (!windLoop) {
+            return;
+          }
           if (
             scope.values.windSpeed / 20 <
             animationSettings.spawnDistance / 2
@@ -137,9 +142,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
             }
           }
 
-          if (!windLoop) {
-            return;
-          }
           if (frame > animationSettings.spawnDistance) {
             frame = 0;
           }
@@ -239,20 +241,11 @@ angular.module("beamng.apps").directive("windsOfChange", [
             "," +
             scope.selectedPreset.speedGapMult +
             "," +
-            scope.selectedPreset.angleGapMult;
+            scope.selectedPreset.angleGapMult +
+            "," +
+            scope.settingsOpen;
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" + storedValues + ")"
-          );
-          bngApi.engineLua(
-            "extensions.windsOfChange.refreshWind(" +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              ")"
           );
         }
 
@@ -314,14 +307,17 @@ angular.module("beamng.apps").directive("windsOfChange", [
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
         };
 
-        let settings = document.getElementById("settings");
-        settings.style.display = "none";
+        
         scope.hideSettings = function () {
-          if (settings.style.display == "none") {
+          let settings = document.getElementById("settings");
+          if (!scope.settingsOpen) {
             settings.style.display = "flex";
+            scope.settingsOpen = true;
           } else {
             settings.style.display = "none";
+            scope.settingsOpen = false;
           }
+          updateSettings();
         };
 
         scope.resetSettings = function () {
@@ -330,8 +326,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
         };
 
         scope.$on("ReceiveData", function (_, data) {
-          const newSpeed = data.split(":")[0];
-          const newDirection = data.split(":")[1];
+          const newSpeed = data[0];
+          const newDirection = data[1];
           scope.values.windSpeed = Number.parseFloat(newSpeed).toFixed(1);
           scope.values.windDirection = Number.parseFloat(
             Number(newDirection)
@@ -346,14 +342,17 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (!data) {
             return;
           }
-          const splitData = data.split(":");
-          scope.selectedPreset = scope.presets[Number(splitData[0])];
-          scope.selectedPreset.minSpeed = Number(splitData[1]);
-          scope.selectedPreset.maxSpeed = Number(splitData[2]);
-          scope.selectedPreset.minAngle = Number(splitData[3]);
-          scope.selectedPreset.maxAngle = Number(splitData[4]);
-          scope.selectedPreset.speedGapMult = Number(splitData[5]);
-          scope.selectedPreset.angleGapMult = Number(splitData[6]);
+          scope.selectedPreset = scope.presets[data[0]];
+          scope.selectedPreset.minSpeed = data[1];
+          scope.selectedPreset.maxSpeed = data[2];
+          scope.selectedPreset.minAngle = data[3];
+          scope.selectedPreset.maxAngle = data[4];
+          scope.selectedPreset.speedGapMult = data[5];
+          scope.selectedPreset.angleGapMult = data[6];
+          scope.settingsOpen = data[7];
+          if (scope.settingsOpen) {
+            settings.style.display = "flex";
+          }
         });
       },
     };
