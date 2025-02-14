@@ -13,8 +13,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           windLoop = data;
         });
 
-        bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
-
         scope.values = {
           carDirection: 0,
           windDirection: 0,
@@ -38,8 +36,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
           moveDistance: 0,
         };
 
-        const presets = {
-          lightBreeze: {
+        const defaultPresets = [
+          {
+            id: 0,
             name: "Light breeze",
             minSpeed: 5,
             maxSpeed: 20,
@@ -48,7 +47,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             speedGapMult: 5,
             angleGapMult: 5,
           },
-          moderate: {
+          {
+            id: 1,
             name: "Moderate breeze",
             minSpeed: 20,
             maxSpeed: 35,
@@ -57,7 +57,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             speedGapMult: 10,
             angleGapMult: 10,
           },
-          strongWinds: {
+          {
+            id: 2,
             name: "Stong breeze",
             minSpeed: 35,
             maxSpeed: 55,
@@ -66,7 +67,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             speedGapMult: 15,
             angleGapMult: 15,
           },
-          storm: {
+          {
+            id: 3,
             name: "Storm",
             minSpeed: 85,
             maxSpeed: 105,
@@ -75,7 +77,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             speedGapMult: 50,
             angleGapMult: 30,
           },
-          tornado: {
+          {
+            id: 4,
             name: "Tornado",
             minSpeed: 200,
             maxSpeed: 350,
@@ -84,17 +87,21 @@ angular.module("beamng.apps").directive("windsOfChange", [
             speedGapMult: 1000,
             angleGapMult: 1000,
           },
-        };
+        ];
 
-        let selectedPreset = "lightBreeze";
-        scope.preset = presets[selectedPreset];
+        scope.presets = JSON.parse(JSON.stringify(defaultPresets));
+        scope.selectedPreset = scope.presets[0];
+
+        bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
+
+        scope.changeSetting = function () {
+          updateSettings();
+        };
 
         scope.$on("streamsUpdate", function (event, streams) {
           if (!streams.sensors) {
             return;
           }
-          updateSettings();
-
           scope.values.carDirection = Number.parseFloat(
             (-streams.sensors.yaw * 360) / (2 * Math.PI)
           ).toFixed(2);
@@ -109,7 +116,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
           windLines.style.transform =
             "rotate(" + scope.values.direction + "deg)";
-
           if (
             scope.values.windSpeed / 20 <
             animationSettings.spawnDistance / 2
@@ -134,7 +140,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (!windLoop) {
             return;
           }
-
           if (frame > animationSettings.spawnDistance) {
             frame = 0;
           }
@@ -156,21 +161,18 @@ angular.module("beamng.apps").directive("windsOfChange", [
                   constructor(xPos) {
                     this.X = xPos * 30;
                     this.Y = height * 2;
-                    this.distance = Math.sqrt(this.X ** 2 + (this.Y / 1) ** 2);
+                    this.distance = Math.sqrt(this.X ** 2 + this.Y ** 2);
                     this.style =
-                      "width: 3; " +
-                        "height: 10; " +
-                        "backgroundColor: white; " +
-                        "position: absolute; " +
-                        "left: " +
-                        this.X +
-                        147 +
-                        "; marginTop: " +
-                        this.Y +
-                        50 +
-                        "; marginLeft: " +
-                        this.distance <
-                      animationSettings.radius
+                      "width: 3px; " +
+                      "height: 10px; " +
+                      "background-color: white; " +
+                      "position: absolute; " +
+                      "left: " +
+                      (this.X + 147) +
+                      "px ; margin-top: " +
+                      (this.Y + 50) +
+                      "px ; margin-left: " +
+                      (this.distance < animationSettings.radius
                         ? this.X > 0
                           ? (1 -
                               this.distance ** 2 /
@@ -180,8 +182,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
                               this.distance ** 2 /
                                 animationSettings.radius ** 2) *
                             -animationSettings.moveDistance
-                        : 0;
-                    +";";
+                        : 0) +
+                      "px ;";
                   }
                 }
                 return Array.from(lineArray, (value) => new Dash(value));
@@ -196,81 +198,90 @@ angular.module("beamng.apps").directive("windsOfChange", [
           clearInterval(windLoop);
         });
 
-        let minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult;
         function updateSettings() {
           if (!document.getElementById("minSpeedInput")) {
             return;
           }
-          const minSpeedInput = document.getElementById("minSpeedInput");
-          const maxSpeedInput = document.getElementById("maxSpeedInput");
-          const minAngleInput = document.getElementById("minAngleInput");
-          const maxAngleInput = document.getElementById("maxAngleInput");
-          const speedGapMultInput =
-            document.getElementById("speedGapMultInput");
-          const angleGapMultInput =
-            document.getElementById("angleGapMultInput");
-          minSpeed = Number(minSpeedInput.value);
-          maxSpeed = Number(maxSpeedInput.value);
+          const minSpeed = scope.selectedPreset.minSpeed;
+          const maxSpeed = scope.selectedPreset.maxSpeed;
+          const minAngle = scope.selectedPreset.minAngle;
+          const maxAngle = scope.selectedPreset.maxAngle;
           if (minSpeed >= maxSpeed) {
-            maxSpeedInput.value = minSpeed;
-            minSpeedInput.value = maxSpeed;
+            scope.selectedPreset.minSpeed = minSpeed;
+            scope.selectedPreset.maxSpeed = maxSpeed;
           }
-          minAngle = Number(minAngleInput.value);
-          maxAngle = Number(maxAngleInput.value);
           if (minAngle >= maxAngle) {
-            maxAngleInput.value = minAngle;
-            minAngleInput.value = maxAngle;
+            scope.selectedPreset.maxAngle = minAngle;
+            scope.selectedPreset.minAngle = maxAngle;
           }
           if (minAngle < 0) {
-            minAngleInput.value = 0;
+            scope.selectedPreset.minAngle = 0;
           }
           if (minAngle > 360) {
-            minAngleInput.value = 360;
+            scope.selectedPreset.minAngle = 360;
           }
           if (maxAngle < 0) {
-            maxAngleInput.value = 0;
+            scope.selectedPreset.maxAngle = 0;
           }
           if (maxAngle > 360) {
-            maxAngleInput.value = 360;
+            scope.selectedPreset.maxAngle = 360;
           }
-          speedGapMult = Number(speedGapMultInput.value);
-          angleGapMult = Number(angleGapMultInput.value);
-          const selectedPreset = document.getElementById("presetSelect").value;
           let storedValues =
-            minSpeed +
+            scope.selectedPreset.id +
             "," +
-            maxSpeed +
+            scope.selectedPreset.minSpeed +
             "," +
-            minAngle +
+            scope.selectedPreset.maxSpeed +
             "," +
-            maxAngle +
+            scope.selectedPreset.minAngle +
             "," +
-            speedGapMult +
+            scope.selectedPreset.maxAngle +
             "," +
-            angleGapMult +
+            scope.selectedPreset.speedGapMult +
             "," +
-            selectedPreset;
+            scope.selectedPreset.angleGapMult;
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" + storedValues + ")"
+          );
+          bngApi.engineLua(
+            "extensions.windsOfChange.refreshWind(" +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              ")"
           );
         }
 
         function startWind() {
+          bngApi.engineLua(
+            "extensions.windsOfChange.refreshWind(" +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              ")"
+          );
           windLoop = setInterval(() => {
-            updateSettings();
             bngApi.engineLua(
               "extensions.windsOfChange.updateWind(" +
-                minSpeed +
+                scope.selectedPreset.minSpeed +
                 "," +
-                maxSpeed +
+                scope.selectedPreset.maxSpeed +
                 "," +
-                minAngle +
+                scope.selectedPreset.minAngle +
                 "," +
-                maxAngle +
+                scope.selectedPreset.maxAngle +
                 "," +
-                speedGapMult +
+                scope.selectedPreset.speedGapMult +
                 "," +
-                angleGapMult +
+                scope.selectedPreset.angleGapMult +
                 ")"
             );
           }, 200);
@@ -283,13 +294,13 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (windLoop) {
             bngApi.engineLua(
               "extensions.windsOfChange.refreshWind(" +
-                minAngle +
+                scope.selectedPreset.minAngle +
                 "," +
-                maxAngle +
+                scope.selectedPreset.maxAngle +
                 "," +
-                minSpeed +
+                scope.selectedPreset.minSpeed +
                 "," +
-                maxSpeed +
+                scope.selectedPreset.maxSpeed +
                 ")"
             );
             return;
@@ -314,18 +325,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
         };
 
         scope.resetSettings = function () {
-          document.getElementById("minSpeedInput").value =
-            presets[selectedPreset].minSpeed;
-          document.getElementById("maxSpeedInput").value =
-            presets[selectedPreset].maxSpeed;
-          document.getElementById("minAngleInput").value =
-            presets[selectedPreset].minAngle;
-          document.getElementById("maxAngleInput").value =
-            presets[selectedPreset].minAngle;
-          document.getElementById("speedGapMultInput").value =
-            presets[selectedPreset].speedGapMult;
-          document.getElementById("angleGapMultInput").value =
-            presets[selectedPreset].angleGapMult;
+          scope.presets = JSON.parse(JSON.stringify(defaultPresets));
+          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
         };
 
         scope.$on("ReceiveData", function (_, data) {
@@ -341,23 +342,18 @@ angular.module("beamng.apps").directive("windsOfChange", [
             ).toFixed(1);
           }
         });
-
         scope.$on("RetrieveSettings", function (_, data) {
-          const savedSettings = data.split(":");
-          const minSpeed = savedSettings[0];
-          const maxSpeed = savedSettings[1];
-          const minAngle = savedSettings[2];
-          const maxAngle = savedSettings[3];
-          const speedGapMult = savedSettings[4];
-          const angleGapMult = savedSettings[5];
-          const selectedPreset = savedSettings[6];
-          document.getElementById("minSpeedInput").value = minSpeed;
-          document.getElementById("maxSpeedInput").value = maxSpeed;
-          document.getElementById("minAngleInput").value = minAngle;
-          document.getElementById("maxAngleInput").value = maxAngle;
-          document.getElementById("speedGapMultInput").value = speedGapMult;
-          document.getElementById("angleGapMultInput").value = angleGapMult;
-          document.getElementById("presetSelect").value = selectedPreset;
+          if (!data) {
+            return;
+          }
+          const splitData = data.split(":");
+          scope.selectedPreset = scope.presets[Number(splitData[0])];
+          scope.selectedPreset.minSpeed = Number(splitData[1]);
+          scope.selectedPreset.maxSpeed = Number(splitData[2]);
+          scope.selectedPreset.minAngle = Number(splitData[3]);
+          scope.selectedPreset.maxAngle = Number(splitData[4]);
+          scope.selectedPreset.speedGapMult = Number(splitData[5]);
+          scope.selectedPreset.angleGapMult = Number(splitData[6]);
         });
       },
     };

@@ -11,13 +11,13 @@ local wind = {
         gap = 0
     },
     speed = {
-        value = randomValue(40),
+        value = randomValue(65),
         change = 0,
         gap = 0
     }
 }
 
-local storedSettings = "0:40:0:360:10:10:lightBreeze"
+local storedSettings = "0:0:20:0:360:5:5"
 
 local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult)
     local function changeDirection()

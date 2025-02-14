@@ -9,7 +9,7 @@
     <div class="visualHolder">
       <div id="windLineHolder">
         <div ng-repeat="line in animationLines">
-          <div ng-repeat="dash in line" style="{{dash.style}}"></div>
+          <div ng-repeat="dash in line" style="{{ dash.style }}"></div>
         </div>
       </div>
       <svg class="arrow" viewBox="0 -1080 1080 1080">
@@ -21,15 +21,15 @@
       <div id="settings">
         <div class="inputHolder">
           <span class="tag">Preset:</span>
-          <select
+          <md-select
             id="presetSelect"
-            name="presectSelect"
-            class="input input-light"
+            ng-model="selectedPreset"
+            ng-change="changeSetting()"
           >
-            <option ng-repeat="preset in presets" value="{{preset.name}}">
-              {{preset.name}}
-            </option>
-          </select>
+            <md-option ng-repeat="preset in presets" ng-value="preset"
+              >{{preset.name}}</md-option
+            >
+          </md-select>
         </div>
         <div class="inputHolder">
           <span class="tag">Speed range:</span>
@@ -38,7 +38,9 @@
             class="input input-light"
             type="number"
             min="0"
-            value="{{preset.minSpeed}}"
+            ng-model="selectedPreset.minSpeed"
+            ng-value="selectedPreset.minSpeed"
+            ng-change="changeSetting()"
           />
           <span>&nbsp;-&nbsp;</span>
           <input
@@ -46,7 +48,9 @@
             class="input input-light"
             type="number"
             min="0"
-            value="{{preset.maxSpeed}}"
+            ng-model="selectedPreset.maxSpeed"
+            ng-value="maxSpeed"
+            ng-change="changeSetting()"
           />
           <span class="speedType">&nbsp;km/h</span>
         </div>
@@ -58,7 +62,9 @@
             type="number"
             min="0"
             max="360"
-            value="{{preset.minAngle}}"
+            ng-model="selectedPreset.minAngle"
+            ng-value="minAngle"
+            ng-change="changeSetting()"
           />
           <span>&nbsp;-&nbsp;</span>
           <input
@@ -67,7 +73,9 @@
             type="number"
             min="0"
             max="360"
-            value="{{preset.maxAngle}}"
+            ng-model="selectedPreset.maxAngle"
+            ng-value="maxAngle"
+            ng-change="changeSetting()"
           />
           <span>&nbsp;°</span>
         </div>
@@ -78,7 +86,9 @@
             class="input input-light"
             type="number"
             min="1"
-            value="{{preset.speedGapMult}}"
+            ng-model="selectedPreset.speedGapMult"
+            ng-value="speedGapMult"
+            ng-change="changeSetting()"
           />
         </div>
         <div class="inputHolderWide">
@@ -88,10 +98,14 @@
             class="input input-light"
             type="number"
             min="1"
-            value="{{preset.angleGapMult}}"
+            ng-model="selectedPreset.angleGapMult"
+            ng-value="angleGapMult"
+            ng-change="changeSetting()"
           />
         </div>
-        <md-button class="button" ng-click="resetSettings()"> Default Settings </md-button>
+        <md-button class="button" ng-click="resetSettings()">
+          Reset Settings
+        </md-button>
       </div>
       <md-button class="settingsButton" ng-click="hideSettings()">
         <md-icon class="material-icons settingsIcon">settings</md-icon>
