@@ -100,6 +100,21 @@ angular.module("beamng.apps").directive("windsOfChange", [
           updateSettings();
         };
 
+        scope.preset = function () {
+          updateSettings();
+          bngApi.engineLua(
+            "extensions.windsOfChange.refreshWind(" +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              ")"
+          );
+        };
+
         scope.$on("streamsUpdate", function (event, streams) {
           if (!streams.sensors) {
             return;
@@ -111,13 +126,13 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.values.carDirection += 360;
           }
           scope.values.direction =
-          Number(scope.values.windDirection) -
-          Number(scope.values.carDirection);
+            Number(scope.values.windDirection) -
+            Number(scope.values.carDirection);
           if (scope.values.direction > 360) {
             scope.values.direction -= 360;
           }
           windLines.style.transform =
-          "rotate(" + scope.values.direction + "deg)";
+            "rotate(" + scope.values.direction + "deg)";
           if (!windLoop) {
             return;
           }
@@ -307,7 +322,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
         };
 
-        
         scope.hideSettings = function () {
           let settings = document.getElementById("settings");
           if (!scope.settingsOpen) {

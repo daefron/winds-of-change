@@ -24,7 +24,7 @@
           <md-select
             id="presetSelect"
             ng-model="selectedPreset"
-            ng-change="changeSetting()"
+            ng-change="changePreset()"
           >
             <md-option ng-repeat="preset in presets" ng-value="preset"
               >{{preset.name}}</md-option
