@@ -100,7 +100,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
           updateSettings();
         };
 
-        scope.preset = function () {
+        scope.changePreset = function () {
+          scope.presets = JSON.parse(JSON.stringify(defaultPresets));
+          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
           updateSettings();
           bngApi.engineLua(
             "extensions.windsOfChange.refreshWind(" +

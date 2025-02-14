@@ -37,7 +37,7 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
             if maxAngle == 360 and minAngle == 0 then
                 newAngle = newAngle - 360
             else
-                newAngle = newAngle - 1
+                newAngle = newAngle - 1 * (angleGapMult / 10)
             end
         elseif newAngle < minAngle then
             if minAngle == 0 and maxAngle == 360 then
@@ -64,10 +64,10 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
         end
         local newSpeed = wind.speed.value + newChange
         if newSpeed > maxSpeed then
-            newSpeed = maxSpeed - 0.001
+            newSpeed = maxSpeed - 0.001 * (speedGapMult / 10)
         end
         if newSpeed < minSpeed then
-            newSpeed = minSpeed + 0.001
+            newSpeed = minSpeed + 0.001 * (speedGapMult / 10)
         end
         wind.speed.gap = newGap
         wind.speed.change = newChange
@@ -83,7 +83,7 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
 
     local speedData = wind.speed.value
     local directionData = wind.direction.value
-    local data = {speedData , directionData}
+    local data = {speedData, directionData}
     guihooks.trigger('ReceiveData', data)
 
 end
@@ -92,7 +92,7 @@ local storedLoop = false
 
 local function stopWind()
     be:queueAllObjectLua('obj:setWind(0,0,0)')
-    local data = {0,90}
+    local data = {0, 90}
     guihooks.trigger('ReceiveData', data)
     storedLoop = false
 end
