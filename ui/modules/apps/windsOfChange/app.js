@@ -66,6 +66,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
             speedGapMult: 15,
             angleGapMult: 15,
           },
+          storm: {
+            name: "Storm",
+            minSpeed: 85,
+            maxSpeed: 105,
+            minAngle: 0,
+            maxAngle: 360,
+            speedGapMult: 50,
+            angleGapMult: 30,
+          },
           tornado: {
             name: "Tornado",
             minSpeed: 200,
