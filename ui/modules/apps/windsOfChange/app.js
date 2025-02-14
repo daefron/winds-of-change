@@ -226,8 +226,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
           const minAngle = scope.selectedPreset.minAngle;
           const maxAngle = scope.selectedPreset.maxAngle;
           if (minSpeed >= maxSpeed) {
-            scope.selectedPreset.minSpeed = minSpeed;
-            scope.selectedPreset.maxSpeed = maxSpeed;
+            scope.selectedPreset.minSpeed = maxSpeed;
+            scope.selectedPreset.maxSpeed = minSpeed;
           }
           if (minAngle >= maxAngle) {
             scope.selectedPreset.maxAngle = minAngle;
