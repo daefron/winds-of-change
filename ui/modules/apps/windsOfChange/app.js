@@ -311,6 +311,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.endWind = function () {
           windLoop = false;
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
+          updateSettings();
         };
 
         scope.hideSettings = function () {
