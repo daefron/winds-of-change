@@ -17,7 +17,7 @@ local wind = {
     }
 }
 
-local storedSettings = {0, 5, 20, 0, 360, 5, 5, false}
+local storedSettings = {0, 5, 20, 0, 360, 5, 5, false, false}
 
 local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult)
     local function changeDirection()
@@ -120,17 +120,13 @@ local function onExtensionUnloaded()
     log('D', 'onExtensionUnloaded', "Called")
 end
 
-local function storeSettings(a, b, c, d, e, f, g, h)
-    storedSettings = {a, b, c, d, e, f, g, h}
+local function storeSettings(a, b, c, d, e, f, g, h, i)
+    storedSettings = {a, b, c, d, e, f, g, h, i}
 end
 
 local function retrieveStoredSettings()
     guihooks.trigger('RetrieveSettings', storedSettings)
 
-end
-
-local function storeLoop(a)
-    storedLoop = a
 end
 
 local function retrieveStoredLoop()
@@ -146,8 +142,5 @@ M.refreshWind = refreshWind
 
 M.storeSettings = storeSettings
 M.retrieveStoredSettings = retrieveStoredSettings
-
-M.storeLoop = storeLoop
-M.retrieveStoredLoop = retrieveStoredLoop
 
 return M

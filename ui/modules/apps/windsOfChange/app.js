@@ -8,10 +8,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
       link: function (scope, element, attrs) {
         let windLoop;
-        bngApi.engineLua("extensions.windsOfChange.retrieveStoredLoop()");
-        scope.$on("RetrieveLoop", function (_, data) {
-          windLoop = data;
-        });
 
         scope.values = {
           carDirection: 0,
@@ -92,7 +88,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
         ];
 
         scope.presets = JSON.parse(JSON.stringify(defaultPresets));
-        scope.selectedPreset = scope.presets[0];
 
         bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
 
@@ -103,24 +98,25 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.changePreset = function () {
           scope.presets = JSON.parse(JSON.stringify(defaultPresets));
           scope.selectedPreset = scope.presets[scope.selectedPreset.id];
+          updateSettings();
           bngApi.engineLua(
             "extensions.windsOfChange.refreshWind(" +
-            scope.selectedPreset.minAngle +
-            "," +
-            scope.selectedPreset.maxAngle +
-            "," +
-            scope.selectedPreset.minSpeed +
-            "," +
-            scope.selectedPreset.maxSpeed +
-            ")"
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              ")"
           );
-          updateSettings();
         };
 
         scope.$on("streamsUpdate", function (event, streams) {
           if (!streams.sensors) {
             return;
           }
+
           scope.values.carDirection = Number.parseFloat(
             (-streams.sensors.yaw * 360) / (2 * Math.PI)
           ).toFixed(2);
@@ -138,6 +134,21 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (!windLoop) {
             return;
           }
+          bngApi.engineLua(
+            "extensions.windsOfChange.updateWind(" +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              "," +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.speedGapMult +
+              "," +
+              scope.selectedPreset.angleGapMult +
+              ")"
+          );
           if (
             scope.values.windSpeed / 20 <
             animationSettings.spawnDistance / 2
@@ -214,7 +225,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         scope.$on("destroy", function () {
           StreamsManager.remove(streamsList);
-          clearInterval(windLoop);
         });
 
         function updateSettings() {
@@ -260,43 +270,11 @@ angular.module("beamng.apps").directive("windsOfChange", [
             "," +
             scope.selectedPreset.angleGapMult +
             "," +
-            scope.settingsOpen;
+            scope.settingsOpen +
+            "," +
+            windLoop;
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" + storedValues + ")"
-          );
-        }
-
-        function startWind() {
-          bngApi.engineLua(
-            "extensions.windsOfChange.refreshWind(" +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              ")"
-          );
-          windLoop = setInterval(() => {
-            bngApi.engineLua(
-              "extensions.windsOfChange.updateWind(" +
-                scope.selectedPreset.minSpeed +
-                "," +
-                scope.selectedPreset.maxSpeed +
-                "," +
-                scope.selectedPreset.minAngle +
-                "," +
-                scope.selectedPreset.maxAngle +
-                "," +
-                scope.selectedPreset.speedGapMult +
-                "," +
-                scope.selectedPreset.angleGapMult +
-                ")"
-            );
-          }, 200);
-          bngApi.engineLua(
-            "extensions.windsOfChange.storeLoop(" + windLoop + ")"
           );
         }
 
@@ -315,12 +293,23 @@ angular.module("beamng.apps").directive("windsOfChange", [
             );
             return;
           }
-          startWind();
+          bngApi.engineLua(
+            "extensions.windsOfChange.refreshWind(" +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              ")"
+          );
+          windLoop = true;
+          updateSettings();
         };
 
         scope.endWind = function () {
-          clearInterval(windLoop);
-          windLoop = null;
+          windLoop = false;
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
         };
 
@@ -355,9 +344,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
         });
         scope.$on("RetrieveSettings", function (_, data) {
-          if (!data) {
-            return;
-          }
+          scope.presets = JSON.parse(JSON.stringify(defaultPresets));
           scope.selectedPreset = scope.presets[data[0]];
           scope.selectedPreset.minSpeed = data[1];
           scope.selectedPreset.maxSpeed = data[2];
@@ -369,6 +356,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (scope.settingsOpen) {
             settings.style.display = "flex";
           }
+          windLoop = data[8];
         });
       },
     };
