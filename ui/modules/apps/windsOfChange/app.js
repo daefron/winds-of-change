@@ -103,18 +103,18 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.changePreset = function () {
           scope.presets = JSON.parse(JSON.stringify(defaultPresets));
           scope.selectedPreset = scope.presets[scope.selectedPreset.id];
-          updateSettings();
           bngApi.engineLua(
             "extensions.windsOfChange.refreshWind(" +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              ")"
+            scope.selectedPreset.minAngle +
+            "," +
+            scope.selectedPreset.maxAngle +
+            "," +
+            scope.selectedPreset.minSpeed +
+            "," +
+            scope.selectedPreset.maxSpeed +
+            ")"
           );
+          updateSettings();
         };
 
         scope.$on("streamsUpdate", function (event, streams) {
