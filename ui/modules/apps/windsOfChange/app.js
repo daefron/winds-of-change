@@ -342,6 +342,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.endWind = function () {
           windLoop = false;
           animationSettings.frameSpeed = 0;
+          bngApi.engineLua(
+            "extensions.windsOfChange.stopWind()"
+          );
           updateSettings();
         };
 
