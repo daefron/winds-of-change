@@ -157,25 +157,16 @@ angular.module("beamng.apps").directive("windsOfChange", [
           } else {
             animationSettings.frameSpeed = animationSettings.spawnDistance / 2;
           }
-          if (
-            scope.values.windSpeed * 1.8 > 20 &&
-            scope.values.windSpeed * 1.8 < 60
-          ) {
-            animationSettings.moveDistance = scope.values.windSpeed * 1.8;
+          if (scope.values.windSpeed > 60) {
+            animationSettings.moveDistance = 60;
           } else {
-            if (scope.values.windSpeed * 1.8 < 20) {
-              animationSettings.moveDistance = 20;
-            } else {
-              animationSettings.moveDistance = 60;
-            }
+            animationSettings.moveDistance = scope.values.windSpeed;
           }
 
-          if (frame > animationSettings.spawnDistance) {
-            frame = 0;
+          frame += 1 * animationSettings.frameSpeed;
           if (frame >= animationSettings.spawnDistance) {
             frame -= animationSettings.spawnDistance;
           }
-          frame += 1 * animationSettings.frameSpeed;
           scope.animationLines = makeLines(-300 + frame, 200 + frame);
           function makeLines(min, max) {
             let lineHolder = [];
@@ -194,6 +185,21 @@ angular.module("beamng.apps").directive("windsOfChange", [
                     this.X = xPos * 30;
                     this.Y = height * 2;
                     this.distance = Math.sqrt(this.X ** 2 + this.Y ** 2);
+                    this.xPlus =
+                      (1 - this.distance ** 2 / animationSettings.radius ** 2) *
+                      animationSettings.moveDistance;
+                    this.rotation =
+                      Math.atan2(
+                        this.Y * (animationSettings.moveDistance / 300),
+                        this.X + this.xPlus
+                      ) *
+                      (180 / Math.PI);
+                    this.negativeRotation =
+                      Math.atan2(
+                        this.Y * (animationSettings.moveDistance / 300),
+                        this.X - this.xPlus
+                      ) *
+                      (180 / Math.PI);
                     this.style =
                       "width: 3px; " +
                       "height: 10px; " +
@@ -206,16 +212,16 @@ angular.module("beamng.apps").directive("windsOfChange", [
                       "px ; margin-left: " +
                       (this.distance < animationSettings.radius
                         ? this.X > 0
-                          ? (1 -
-                              this.distance ** 2 /
-                                animationSettings.radius ** 2) *
-                            animationSettings.moveDistance
-                          : (1 -
-                              this.distance ** 2 /
-                                animationSettings.radius ** 2) *
-                            -animationSettings.moveDistance
+                          ? this.xPlus
+                          : -this.xPlus
                         : 0) +
-                      "px ;";
+                      "px ; transform: rotate(" +
+                      (this.distance > animationSettings.radius
+                        ? 0
+                        : this.X > 0
+                        ? this.rotation
+                        : this.negativeRotation) +
+                      "deg);";
                   }
                 }
                 return Array.from(lineArray, (value) => new Dash(value));
