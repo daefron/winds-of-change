@@ -172,6 +172,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
           if (frame > animationSettings.spawnDistance) {
             frame = 0;
+          if (frame >= animationSettings.spawnDistance) {
+            frame -= animationSettings.spawnDistance;
           }
           frame += 1 * animationSettings.frameSpeed;
           scope.animationLines = makeLines(-300 + frame, 200 + frame);
