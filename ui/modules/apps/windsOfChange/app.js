@@ -131,24 +131,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
           windLines.style.transform =
             "rotate(" + scope.values.direction + "deg)";
-          if (!windLoop) {
-            return;
-          }
-          bngApi.engineLua(
-            "extensions.windsOfChange.updateWind(" +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              "," +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.speedGapMult +
-              "," +
-              scope.selectedPreset.angleGapMult +
-              ")"
-          );
+
           if (
             scope.values.windSpeed / 20 <
             animationSettings.spawnDistance / 2
@@ -163,10 +146,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             animationSettings.moveDistance = scope.values.windSpeed;
           }
 
-          frame += 1 * animationSettings.frameSpeed;
-          if (frame >= animationSettings.spawnDistance) {
-            frame -= animationSettings.spawnDistance;
-          }
+    
           scope.animationLines = makeLines(-300 + frame, 200 + frame);
           function makeLines(min, max) {
             let lineHolder = [];
@@ -229,6 +209,28 @@ angular.module("beamng.apps").directive("windsOfChange", [
             }
             return lineHolder;
           }
+          if (!windLoop) {
+            return;
+          }
+          frame += 1 * animationSettings.frameSpeed;
+          if (frame >= animationSettings.spawnDistance) {
+            frame -= animationSettings.spawnDistance;
+          }
+          bngApi.engineLua(
+            "extensions.windsOfChange.updateWind(" +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              "," +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.speedGapMult +
+              "," +
+              scope.selectedPreset.angleGapMult +
+              ")"
+          );
         });
 
         scope.$on("destroy", function () {
@@ -318,7 +320,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         scope.endWind = function () {
           windLoop = false;
-          bngApi.engineLua("extensions.windsOfChange.stopWind()");
+          animationSettings.frameSpeed = 0;
           updateSettings();
         };
 
