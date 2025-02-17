@@ -27,7 +27,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         let frame = 0;
         const animationSettings = {
-          lineCount: 18,
+          lineCount: 16,
           radius: 110,
           spawnDistance: 40,
           frameSpeed: 1,
@@ -140,14 +140,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
           } else {
             animationSettings.frameSpeed = animationSettings.spawnDistance / 2;
           }
-          if (scope.values.windSpeed > 60) {
-            animationSettings.moveDistance = 60;
+          if (scope.values.windSpeed > 80) {
+            animationSettings.moveDistance = 80;
+          } else if (scope.values.windSpeed < 25) {
+            animationSettings.moveDistance = 25;
           } else {
             animationSettings.moveDistance = scope.values.windSpeed;
           }
 
-    
-          scope.animationLines = makeLines(-300 + frame, 200 + frame);
+          scope.animationLines = makeLines(-250 + frame, 140 + frame);
           function makeLines(min, max) {
             let lineHolder = [];
             for (let i = min; i <= max; i += animationSettings.spawnDistance) {
@@ -163,7 +164,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 class Dash {
                   constructor(xPos) {
                     this.X = xPos * 30;
-                    this.Y = height * 2;
+                    this.Y = height;
                     this.distance = Math.sqrt(this.X ** 2 + this.Y ** 2);
                     this.xPlus =
                       (1 - this.distance ** 2 / animationSettings.radius ** 2) *
