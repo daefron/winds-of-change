@@ -32,6 +32,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           spawnDistance: 40,
           frameSpeed: 1,
           moveDistance: 0,
+          xSpacing: 30,
         };
 
         const defaultPresets = [
@@ -148,7 +149,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
             animationSettings.moveDistance = scope.values.windSpeed;
           }
 
-          scope.animationLines = makeLines(-250 + frame, 140 + frame);
           function makeLines(min, max) {
             let lineHolder = [];
             for (let i = min; i <= max; i += animationSettings.spawnDistance) {
@@ -163,46 +163,57 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 }
                 class Dash {
                   constructor(xPos) {
-                    this.X = xPos * 30;
+                    this.X = xPos * animationSettings.xSpacing;
                     this.Y = height;
-                    this.distance = Math.sqrt(this.X ** 2 + this.Y ** 2);
-                    this.xPlus =
-                      (1 - this.distance ** 2 / animationSettings.radius ** 2) *
-                      animationSettings.moveDistance;
-                    this.rotation =
-                      Math.atan2(
-                        this.Y * (animationSettings.moveDistance / 300),
-                        this.X + this.xPlus
-                      ) *
-                      (180 / Math.PI);
-                    this.negativeRotation =
-                      Math.atan2(
-                        this.Y * (animationSettings.moveDistance / 300),
-                        this.X - this.xPlus
-                      ) *
-                      (180 / Math.PI);
-                    this.style =
+                    this.defaultStyles =
                       "width: 3px; " +
                       "height: 10px; " +
                       "background-color: white; " +
                       "position: absolute; " +
                       "left: " +
                       (this.X + 147) +
-                      "px ; margin-top: " +
-                      (this.Y + 50) +
-                      "px ; margin-left: " +
-                      (this.distance < animationSettings.radius
-                        ? this.X > 0
-                          ? this.xPlus
-                          : -this.xPlus
-                        : 0) +
-                      "px ; transform: rotate(" +
-                      (this.distance > animationSettings.radius
-                        ? 0
-                        : this.X > 0
-                        ? this.rotation
-                        : this.negativeRotation) +
-                      "deg);";
+                      "px; ";
+                  }
+                  update() {
+                    this.Y += frame;
+
+                    this.yMarginRender =
+                      "margin-top: " + (this.Y + 50) + "px ; ";
+
+                    this.distance = Math.sqrt(this.X ** 2 + this.Y ** 2);
+
+                    if (this.distance < animationSettings.radius) {
+                      this.xMargin =
+                        (1 -
+                          this.distance ** 2 / animationSettings.radius ** 2) *
+                        animationSettings.moveDistance;
+                      if (this.X < 0) {
+                        this.xMargin *= -1;
+                      }
+                      this.xMarginRender =
+                        "margin-left: " + this.xMargin + "px;";
+                    } else {
+                      this.xMarginRender = "";
+                    }
+
+                    if (this.distance < animationSettings.radius) {
+                      this.rotation =
+                        Math.atan2(
+                          this.Y * (animationSettings.moveDistance / 300),
+                          this.X + this.xMargin
+                        ) *
+                        (180 / Math.PI);
+                      this.rotationRender =
+                        "transform: rotate(" + this.rotation + "deg);";
+                    } else {
+                      this.rotationRender = "";
+                    }
+
+                    this.style =
+                      this.defaultStyles +
+                      this.yMarginRender +
+                      this.xMarginRender +
+                      this.rotationRender;
                   }
                 }
                 return Array.from(lineArray, (value) => new Dash(value));
@@ -217,6 +228,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
           if (frame >= animationSettings.spawnDistance) {
             frame -= animationSettings.spawnDistance;
           }
+          if (!scope.animationsLine) {
+            scope.animationLines = makeLines(-250, 140);
+          }
+          scope.animationLines.forEach((line) => {
+            line.forEach((dash) => {
+              dash.update();
+            });
+          });
+
           bngApi.engineLua(
             "extensions.windsOfChange.updateWind(" +
               scope.selectedPreset.minSpeed +
