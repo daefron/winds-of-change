@@ -45,11 +45,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         function makeLines(min, max) {
           let lineHolder = [];
-          for (
-            let i = min;
-            i <= max;
-            i += animationSettings.spawnDistance
-          ) {
+          for (let i = min; i <= max; i += animationSettings.spawnDistance) {
             lineHolder.push(lineMaker(i));
             function lineMaker(height) {
               let lineArray = [];
@@ -81,15 +77,12 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
                   if (this.distance < animationSettings.radius) {
                     this.xMargin =
-                      (1 -
-                        this.distance ** 2 /
-                          animationSettings.radius ** 2) *
+                      (1 - this.distance ** 2 / animationSettings.radius ** 2) *
                       animationSettings.moveDistance;
                     if (this.X < 0) {
                       this.xMargin *= -1;
                     }
-                    this.xMarginRender =
-                      "margin-left: " + this.xMargin + "px;";
+                    this.xMarginRender = "margin-left: " + this.xMargin + "px;";
                   } else {
                     this.xMarginRender = "";
                   }
@@ -220,9 +213,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
           const maxSpeed = scope.selectedPreset.maxSpeed;
           const minAngle = scope.selectedPreset.minAngle;
           const maxAngle = scope.selectedPreset.maxAngle;
-          if (minSpeed >= maxSpeed) {
-            scope.selectedPreset.minSpeed = maxSpeed;
+          const speedChange = scope.selectedPreset.speedChange;
+          const angleChange = scope.selectedPreset.angleChange;
+          if (minSpeed > maxSpeed) {
             scope.selectedPreset.maxSpeed = minSpeed;
+            scope.selectedPreset.minSpeed = maxSpeed;
+          }
+          if (maxSpeed < minSpeed) {
+            scope.selectedPreset.maxSpeed = minSpeed;
+            scope.selectedPreset.minSpeed = maxSpeed;
           }
           if (minAngle >= maxAngle) {
             scope.selectedPreset.maxAngle = minAngle;
@@ -239,6 +238,12 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
           if (maxAngle > 360) {
             scope.selectedPreset.maxAngle = 360;
+          }
+          if (speedChange <= 0 || !speedChange) {
+            scope.selectedPreset.speedChange = 1;
+          }
+          if (angleChange <= 0 || !angleChange) {
+            scope.selectedPreset.angleChange = 1;
           }
           let storedValues =
             scope.selectedPreset.id +
@@ -341,8 +346,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
           if (scope.values.windSpeed > 80) {
             animationSettings.moveDistance = 80;
-          } else if (scope.values.windSpeed < 25) {
-            animationSettings.moveDistance = 25;
+            // } else if (scope.values.windSpeed < 25) {
+            // animationSettings.moveDistance = 25;
           } else {
             animationSettings.moveDistance = scope.values.windSpeed;
           }
@@ -364,7 +369,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             }
           }
         });
-       
+
         scope.$on("RetrieveSettings", function (_, data) {
           scope.presets = JSON.parse(JSON.stringify(defaultPresets));
           scope.selectedPreset = scope.presets[data.id];

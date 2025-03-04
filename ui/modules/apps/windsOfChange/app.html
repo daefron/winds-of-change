@@ -39,7 +39,7 @@
             type="number"
             min="0"
             ng-model="selectedPreset.minSpeed"
-            ng-value="selectedPreset.minSpeed"
+            ng-value="minSpeed"
             ng-change="changeSetting()"
           />
           <span>&nbsp;-&nbsp;</span>
@@ -88,7 +88,7 @@
             min="1"
             ng-model="selectedPreset.speedChange"
             ng-value="speedChange"
-            ng-change="changeSetting()"
+            ng-blur="changeSetting()"
           />
         </div>
         <div class="inputHolderWide">
@@ -100,7 +100,7 @@
             min="1"
             ng-model="selectedPreset.angleChange"
             ng-value="angleChange"
-            ng-change="changeSetting()"
+            ng-blur="changeSetting()"
           />
         </div>
         <md-button class="button" ng-click="resetSettings()">

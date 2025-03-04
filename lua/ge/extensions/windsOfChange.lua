@@ -85,8 +85,7 @@ local function updateWind()
         if newChange > speedChange / 100 then
             newChange = speedChange / 100
             newGap = newGap * 0.9
-        end
-        if newChange < speedChange / -100 then
+        elseif newChange < speedChange / -100 then
             newChange = speedChange / -100
             newGap = newGap * 0.9
         end
@@ -96,8 +95,7 @@ local function updateWind()
             newSpeed = maxSpeed - (speedChange / 100)
             newGap = newGap * -1
             newChange = newChange * -1
-        end
-        if newSpeed < minSpeed then
+        elseif newSpeed < minSpeed then
             newSpeed = minSpeed + (speedChange / 100)
             newGap = newGap * -1
             newChange = newChange * -1
@@ -110,13 +108,11 @@ local function updateWind()
 
     changeDirection()
     local radians = math.pi / 180
-    local direction = wind.direction.value
-    local radiansDirection = direction * radians
+    local radiansDirection = wind.direction.value * radians
 
     changeSpeed()
-    local speed = wind.speed.value
     -- changes speed from m/s to km/h
-    local kmhSpeed = speed / 3.6
+    local kmhSpeed = wind.speed.value / 3.6
 
     local xValue = math.sin(radiansDirection) * (kmhSpeed)
     local yValue = math.cos(radiansDirection) * (kmhSpeed)
@@ -132,7 +128,6 @@ local function onGuiUpdate()
 end
 
 local function stopWind()
-    be:queueAllObjectLua('obj:setWind(0,0,0)')
     storedLoop = false
     storedSettings.windLoop = false
     guihooks.trigger('ReceiveData', {0, 0})
