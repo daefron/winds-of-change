@@ -18,7 +18,7 @@
           d="m200-120-40-40 320-720 320 720-40 40-280-120zm84-124 196-84 196 84-196-440zm196-84"
         />
       </svg>
-      <div id="settings" style="display: none;">
+      <div id="settings" style="display: none">
         <div class="inputHolder">
           <span class="tag">Preset:</span>
           <md-select
@@ -82,24 +82,24 @@
         <div class="inputHolderWide">
           <span class="tag">Speed randomness:</span>
           <input
-            id="speedGapMultInput"
+            id="speedChangeInput"
             class="input input-light"
             type="number"
             min="1"
-            ng-model="selectedPreset.speedGapMult"
-            ng-value="speedGapMult"
+            ng-model="selectedPreset.speedChange"
+            ng-value="speedChange"
             ng-change="changeSetting()"
           />
         </div>
         <div class="inputHolderWide">
           <span class="tag">Angle randomness:</span>
           <input
-            id="angleGapMultInput"
+            id="angleChangeInput"
             class="input input-light"
             type="number"
             min="1"
-            ng-model="selectedPreset.angleGapMult"
-            ng-value="angleGapMult"
+            ng-model="selectedPreset.angleChange"
+            ng-value="angleChange"
             ng-change="changeSetting()"
           />
         </div>
