@@ -17,10 +17,27 @@ local wind = {
     }
 }
 
-local storedSettings = {0, 5, 20, 0, 360, 5, 5, false, false}
+local storedSettings = {
+    id = 0,
+    minSpeed = 5,
+    maxSpeed = 20,
+    minAngle = 0,
+    maxAngle = 360,
+    speedChange = 5,
+    angleChange = 5,
+    settingsOpen = false,
+    windLoop = false
+}
+
 local storedLoop = false
 
-local function updateWind(minAngle, maxAngle, minSpeed, maxSpeed, angleChange, speedChange)
+local function updateWind()
+    local minSpeed = storedSettings.minSpeed
+    local maxSpeed = storedSettings.maxSpeed
+    local minAngle = storedSettings.minAngle
+    local maxAngle = storedSettings.maxAngle
+    local speedChange = storedSettings.speedChange
+    local angleChange = storedSettings.angleChange
     local function changeDirection()
         local gapDiff = ((math.random() - 0.5) / 100) * (angleChange / 10)
         local newGap = gapDiff + wind.direction.gap
@@ -61,12 +78,12 @@ local function updateWind(minAngle, maxAngle, minSpeed, maxSpeed, angleChange, s
         local gapDiff = ((math.random() - 0.5) / 100) * (speedChange / 10)
         local newGap = gapDiff + wind.speed.gap
         local newChange = wind.speed.change + newGap
-        if newChange > speedChange / 200 then
-            newChange = speedChange / 200
+        if newChange > speedChange / 100 then
+            newChange = speedChange / 100
             newGap = newGap * 0.9
         end
-        if newChange < speedChange / -200 then
-            newChange = speedChange / -200
+        if newChange < speedChange / -100 then
+            newChange = speedChange / -100
             newGap = newGap * 0.9
         end
 
@@ -100,9 +117,19 @@ local function updateWind(minAngle, maxAngle, minSpeed, maxSpeed, angleChange, s
     local xValue = math.sin(radiansDirection) * (kmhSpeed)
     local yValue = math.cos(radiansDirection) * (kmhSpeed)
     be:queueAllObjectLua('obj:setWind(' .. tostring(xValue) .. "," .. tostring(yValue) .. ",0)")
+end
 
-    local data = {speed, direction}
-    guihooks.trigger('ReceiveData', data)
+local function onUpdate()
+    if (storedSettings.windLoop) then
+        updateWind()
+    end
+end
+
+local function onGuiUpdate()
+    if (storedSettings.windLoop) then
+        local data = {wind.speed.value, wind.direction.value}
+        guihooks.trigger('ReceiveData', data)
+    end
 end
 
 local function stopWind()
@@ -135,7 +162,17 @@ local function onExtensionUnloaded()
 end
 
 local function storeSettings(a, b, c, d, e, f, g, h, i)
-    storedSettings = {a, b, c, d, e, f, g, h, i}
+    storedSettings = {
+        id = a,
+        minSpeed = b,
+        maxSpeed = c,
+        minAngle = d,
+        maxAngle = e,
+        speedChange = f,
+        angleChange = g,
+        settingsOpen = h,
+        windLoop = i
+    }
 end
 
 local function retrieveStoredSettings()
@@ -149,6 +186,10 @@ end
 
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
+
+M.onUpdate = onUpdate
+
+M.onGuiUpdate = onGuiUpdate
 
 M.updateWind = updateWind
 M.stopWind = stopWind
