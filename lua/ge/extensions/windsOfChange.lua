@@ -130,6 +130,7 @@ end
 local function stopWind()
     storedLoop = false
     storedSettings.windLoop = false
+    be:queueAllObjectLua('obj:setWind(0,0,0)')
     guihooks.trigger('ReceiveData', {0, 0})
 end
 
