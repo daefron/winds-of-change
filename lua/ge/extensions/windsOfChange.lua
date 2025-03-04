@@ -130,7 +130,8 @@ end
 local function stopWind()
     be:queueAllObjectLua('obj:setWind(0,0,0)')
     storedLoop = false
-    guihooks.trigger('ReceiveData', {0, 90})
+    storedSettings.windLoop = false
+    guihooks.trigger('ReceiveData', {0, 0})
 end
 
 local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
