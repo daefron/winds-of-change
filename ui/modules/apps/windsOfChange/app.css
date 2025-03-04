@@ -32,8 +32,8 @@
   min-height: 0px;
   width: 40px;
   height: 40px;
-  margin-left: calc(50% - 23px);
-  margin-top: 128px;
+  margin-left: calc(50% - 20px);
+  margin-top: 130px;
 }
 .settingsIcon {
   width: 30px;
@@ -46,7 +46,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transform-origin: 147px 300px;
+  transform-origin: 150px 300px;
 }
 .arrow {
   position: absolute;
@@ -85,10 +85,6 @@
 .inputHolderWide > .tag {
   width: 150px;
   margin-right: 10px;
-}
-.inputHolderWide > input {
-  width: 60px;
-  height: 30px;
 }
 #settings > button {
   font-weight: bold;
