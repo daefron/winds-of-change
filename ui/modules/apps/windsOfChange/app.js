@@ -236,10 +236,10 @@ angular.module("beamng.apps").directive("windsOfChange", [
             }
           });
           if (
-            scope.values.windSpeed / 20 <
+            scope.values.windSpeed / 10 <
             animationSettings.spawnDistance / 2
           ) {
-            animationSettings.frameSpeed = scope.values.windSpeed / 20;
+            animationSettings.frameSpeed = scope.values.windSpeed / 10;
           } else {
             animationSettings.frameSpeed = animationSettings.spawnDistance / 2;
           }
@@ -249,6 +249,13 @@ angular.module("beamng.apps").directive("windsOfChange", [
             animationSettings.moveDistance = 25;
           } else {
             animationSettings.moveDistance = scope.values.windSpeed;
+          }
+          if (scope.values.windSpeed < 110) {
+            animationSettings.radius = 110;
+          } else if (scope.values.windSpeed > 160){
+            animationSettings.radius = 160
+          } else {
+            animationSettings.radius = scope.values.windSpeed;
           }
           frame += animationSettings.frameSpeed;
           if (frame >= animationSettings.spawnDistance) {
