@@ -103,6 +103,16 @@
             ng-blur="changeSetting()"
           />
         </div>
+        <div class="inputHolderWide">
+          <span class="tag">Vertical wind?</span>
+          <input
+            id="verticalEnabledInput"
+            class="input input-light"
+            type="checkbox"
+            ng-model="verticalEnabled"
+            ng-change="changeSetting()"
+          />
+        </div>
         <md-button class="button" ng-click="resetSettings()">
           Reset Settings
         </md-button>

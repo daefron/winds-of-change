@@ -26,7 +26,8 @@ local storedSettings = {
     speedChange = 5,
     angleChange = 5,
     settingsOpen = false,
-    windLoop = false
+    windLoop = false,
+    verticalEnabled = false
 }
 
 local storedLoop = false
@@ -38,6 +39,7 @@ local function updateWind()
     local maxAngle = storedSettings.maxAngle
     local speedChange = storedSettings.speedChange
     local angleChange = storedSettings.angleChange
+    local verticalEnabled = storedSettings.verticalEnabled
     if minSpeed == undefined or not maxSpeed == undefined or not minAngle == undefined or not maxAngle == undefined or
         not speedChange == undefined or not angleChange == undefined then
         return
@@ -115,8 +117,12 @@ local function updateWind()
     local kmhSpeed = wind.speed.value / 3.6
 
     local xValue = math.sin(radiansDirection) * (kmhSpeed)
-    local yValue = math.cos(radiansDirection) * (kmhSpeed)
-    be:queueAllObjectLua('obj:setWind(' .. tostring(xValue) .. "," .. tostring(yValue) .. ",0)")
+    local zValue = math.cos(radiansDirection) * (kmhSpeed)
+    local yValue = 0
+    if (verticalEnabled) then
+        yValue = zValue + xValue
+    end
+    be:queueAllObjectLua('obj:setWind(' .. tostring(xValue) .. "," .. tostring(zValue) .. "," .. tostring(yValue) .. ')')
 end
 
 local function onGuiUpdate()
@@ -157,7 +163,7 @@ local function onExtensionUnloaded()
     log('D', 'onExtensionUnloaded', "Called")
 end
 
-local function storeSettings(a, b, c, d, e, f, g, h, i)
+local function storeSettings(a, b, c, d, e, f, g, h, i, j)
     storedSettings = {
         id = a,
         minSpeed = b,
@@ -167,7 +173,8 @@ local function storeSettings(a, b, c, d, e, f, g, h, i)
         speedChange = f,
         angleChange = g,
         settingsOpen = h,
-        windLoop = i
+        windLoop = i,
+        verticalEnabled = j
     }
 end
 

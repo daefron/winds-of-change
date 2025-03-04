@@ -168,6 +168,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         scope.presets = JSON.parse(JSON.stringify(defaultPresets));
 
+        scope.verticalEnabled = false;
+
         bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
 
         scope.changeSetting = function () {
@@ -262,7 +264,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
             "," +
             scope.settingsOpen +
             "," +
-            windLoop;
+            windLoop +
+            "," +
+            scope.verticalEnabled;
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" + storedValues + ")"
           );
@@ -384,6 +388,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             settings.style.display = "flex";
           }
           windLoop = data.windLoop;
+          scope.verticalEnabled = data.verticalEnabled;
         });
       },
     };
