@@ -20,16 +20,16 @@ local wind = {
 local storedSettings = {0, 5, 20, 0, 360, 5, 5, false, false}
 local storedLoop = false
 
-local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult)
+local function updateWind(minAngle, maxAngle, minSpeed, maxSpeed, angleChange, speedChange)
     local function changeDirection()
-        local gapDiff = ((math.random() - 0.5) / 100) * (angleGapMult / 10)
+        local gapDiff = ((math.random() - 0.5) / 100) * (angleChange / 10)
         local newGap = gapDiff + wind.direction.gap
         local newChange = wind.direction.change + newGap
-        if newChange > angleGapMult / 100 then
-            newChange = angleGapMult / 100
+        if newChange > angleChange / 100 then
+            newChange = angleChange / 100
             newGap = newGap * 0.9
-        elseif newChange < angleGapMult / -100 then
-            newChange = angleGapMult / -100
+        elseif newChange < angleChange / -100 then
+            newChange = angleChange / -100
             newGap = newGap * 0.9
         end
 
@@ -38,7 +38,7 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
             if maxAngle == 360 and minAngle == 0 then
                 newAngle = newAngle - 360
             else
-                newAngle = newAngle - (angleGapMult / 100)
+                newAngle = newAngle - (angleChange / 100)
                 newGap = newGap * -1
                 newChange = newChange * -1
             end
@@ -46,7 +46,7 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
             if minAngle == 0 and maxAngle == 360 then
                 newAngle = 360 - newAngle
             else
-                newAngle = newAngle + (angleGapMult / 100)
+                newAngle = newAngle + (angleChange / 100)
                 newGap = newGap * -1
                 newChange = newChange * -1
             end
@@ -58,26 +58,26 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
     end
 
     local function changeSpeed()
-        local gapDiff = ((math.random() - 0.5) / 100) * (speedGapMult / 10)
+        local gapDiff = ((math.random() - 0.5) / 100) * (speedChange / 10)
         local newGap = gapDiff + wind.speed.gap
         local newChange = wind.speed.change + newGap
-        if newChange > speedGapMult / 200 then
-            newChange = speedGapMult / 200
+        if newChange > speedChange / 200 then
+            newChange = speedChange / 200
             newGap = newGap * 0.9
         end
-        if newChange < speedGapMult / -200 then
-            newChange = speedGapMult / -200
+        if newChange < speedChange / -200 then
+            newChange = speedChange / -200
             newGap = newGap * 0.9
         end
 
         local newSpeed = wind.speed.value + newChange
         if newSpeed > maxSpeed then
-            newSpeed = maxSpeed - (speedGapMult / 100)
+            newSpeed = maxSpeed - (speedChange / 100)
             newGap = newGap * -1
             newChange = newChange * -1
         end
         if newSpeed < minSpeed then
-            newSpeed = minSpeed + (speedGapMult / 100)
+            newSpeed = minSpeed + (speedChange / 100)
             newGap = newGap * -1
             newChange = newChange * -1
         end
@@ -94,6 +94,7 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
 
     changeSpeed()
     local speed = wind.speed.value
+    -- changes speed from m/s to km/h
     local kmhSpeed = speed / 3.6
 
     local xValue = math.sin(radiansDirection) * (kmhSpeed)
