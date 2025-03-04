@@ -119,14 +119,9 @@ local function updateWind()
     be:queueAllObjectLua('obj:setWind(' .. tostring(xValue) .. "," .. tostring(yValue) .. ",0)")
 end
 
-local function onUpdate()
-    if (storedSettings.windLoop) then
-        updateWind()
-    end
-end
-
 local function onGuiUpdate()
     if (storedSettings.windLoop) then
+        updateWind()
         local data = {wind.speed.value, wind.direction.value}
         guihooks.trigger('ReceiveData', data)
     end
@@ -186,8 +181,6 @@ end
 
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
-
-M.onUpdate = onUpdate
 
 M.onGuiUpdate = onGuiUpdate
 
