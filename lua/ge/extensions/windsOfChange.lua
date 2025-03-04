@@ -44,75 +44,63 @@ local function updateWind()
         not speedChange == undefined or not angleChange == undefined then
         return
     end
-    local function changeDirection()
-        local gapDiff = ((math.random() - 0.5) / 100) * (angleChange / 10)
-        local newGap = gapDiff + wind.direction.gap
-        local newChange = wind.direction.change + newGap
-        if newChange > angleChange / 100 then
-            newChange = angleChange / 100
-            newGap = newGap * 0.9
-        elseif newChange < angleChange / -100 then
-            newChange = angleChange / -100
-            newGap = newGap * 0.9
+
+    local function changeValue(type, typeChange)
+        local windData = wind[type]
+        local gap = windData.gap
+        local change = windData.change
+        local value = windData.value
+
+        -- generate random adjustment for "flow"
+        local randomAdjustment = ((math.random() - 0.5) / 100) * (typeChange / 10)
+
+        local adjustedGap = gap + randomAdjustment
+        local adjustedChange = change + adjustedGap
+
+        -- max allowable change
+        local maxChange = typeChange / 100
+
+        -- clamps adjustedChange to stay within limits
+        adjustedChange = math.max(math.min(adjustedChange, maxChange), -maxChange)
+
+        -- reduces adjustedGap if clamp occurs to slow future changes
+        if math.abs(adjustedChange) == maxChange then
+            adjustedGap = adjustedGap * 0.9
         end
 
-        local newAngle = wind.direction.value + newChange
-        if newAngle > maxAngle then
+        -- initial update value
+        local updatedValue = value + adjustedChange
+        local clampedValue = updatedValue
+
+        -- clamps updatedValue to stay within limits based on tmype
+        if type == "direction" then
+            -- keeps angle within standard angle range
             if maxAngle == 360 and minAngle == 0 then
-                newAngle = newAngle - 360
+                clampedValue = updatedValue % 360
             else
-                newAngle = newAngle - (angleChange / 100)
-                newGap = newGap * -1
-                newChange = newChange * -1
+                clampedValue = math.max(math.min(updatedValue, maxAngle), minAngle)
             end
-        elseif newAngle < minAngle then
-            if minAngle == 0 and maxAngle == 360 then
-                newAngle = 360 - newAngle
-            else
-                newAngle = newAngle + (angleChange / 100)
-                newGap = newGap * -1
-                newChange = newChange * -1
-            end
+        elseif type == "speed" then
+            clampedValue = math.max(math.min(updatedValue, maxSpeed), minSpeed)
         end
 
-        wind.direction.gap = newGap
-        wind.direction.change = newChange
-        wind.direction.value = newAngle
+        -- inverts change direction if updatedValue clamped
+        if clampedValue ~= updatedValue then
+            adjustedGap = -adjustedGap
+            adjustedChange = -adjustedChange
+        end
+
+        -- apply changes
+        windData.gap = adjustedGap
+        windData.change = adjustedChange
+        windData.value = clampedValue
     end
 
-    local function changeSpeed()
-        local gapDiff = ((math.random() - 0.5) / 100) * (speedChange / 10)
-        local newGap = gapDiff + wind.speed.gap
-        local newChange = wind.speed.change + newGap
-        if newChange > speedChange / 100 then
-            newChange = speedChange / 100
-            newGap = newGap * 0.9
-        elseif newChange < speedChange / -100 then
-            newChange = speedChange / -100
-            newGap = newGap * 0.9
-        end
-
-        local newSpeed = wind.speed.value + newChange
-        if newSpeed > maxSpeed then
-            newSpeed = maxSpeed - (speedChange / 100)
-            newGap = newGap * -1
-            newChange = newChange * -1
-        elseif newSpeed < minSpeed then
-            newSpeed = minSpeed + (speedChange / 100)
-            newGap = newGap * -1
-            newChange = newChange * -1
-        end
-
-        wind.speed.gap = newGap
-        wind.speed.change = newChange
-        wind.speed.value = newSpeed
-    end
-
-    changeDirection()
+    changeValue("direction", angleChange)
     local radians = math.pi / 180
     local radiansDirection = wind.direction.value * radians
 
-    changeSpeed()
+    changeValue("speed", speedChange)
     -- changes speed from m/s to km/h
     local kmhSpeed = wind.speed.value / 3.6
 
