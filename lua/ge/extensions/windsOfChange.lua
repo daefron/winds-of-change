@@ -38,6 +38,10 @@ local function updateWind()
     local maxAngle = storedSettings.maxAngle
     local speedChange = storedSettings.speedChange
     local angleChange = storedSettings.angleChange
+    if minSpeed == undefined or not maxSpeed == undefined or not minAngle == undefined or not maxAngle == undefined or
+        not speedChange == undefined or not angleChange == undefined then
+        return
+    end
     local function changeDirection()
         local gapDiff = ((math.random() - 0.5) / 100) * (angleChange / 10)
         local newGap = gapDiff + wind.direction.gap
