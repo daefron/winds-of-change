@@ -18,6 +18,7 @@ local wind = {
 }
 
 local storedSettings = {0, 5, 20, 0, 360, 5, 5, false, false}
+local storedLoop = false
 
 local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, angleGapMult)
     local function changeDirection()
@@ -68,6 +69,7 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
             newChange = speedGapMult / -200
             newGap = newGap * 0.9
         end
+
         local newSpeed = wind.speed.value + newChange
         if newSpeed > maxSpeed then
             newSpeed = maxSpeed - (speedGapMult / 100)
@@ -79,32 +81,33 @@ local function updateWind(minSpeed, maxSpeed, minAngle, maxAngle, speedGapMult, 
             newGap = newGap * -1
             newChange = newChange * -1
         end
+
         wind.speed.gap = newGap
         wind.speed.change = newChange
         wind.speed.value = newSpeed
     end
+
     changeDirection()
-    changeSpeed()
     local radians = math.pi / 180
-    local xcoeff = math.sin(wind.direction.value * radians)
-    local ycoeff = math.cos(wind.direction.value * radians)
-    be:queueAllObjectLua('obj:setWind(' .. tostring(xcoeff * (wind.speed.value / 3.6)) .. "," ..
-                             tostring(ycoeff * (wind.speed.value / 3.6)) .. ",0)")
+    local direction = wind.direction.value
+    local radiansDirection = direction * radians
 
-    local speedData = wind.speed.value
-    local directionData = wind.direction.value
-    local data = {speedData, directionData}
+    changeSpeed()
+    local speed = wind.speed.value
+    local kmhSpeed = speed / 3.6
+
+    local xValue = math.sin(radiansDirection) * (kmhSpeed)
+    local yValue = math.cos(radiansDirection) * (kmhSpeed)
+    be:queueAllObjectLua('obj:setWind(' .. tostring(xValue) .. "," .. tostring(yValue) .. ",0)")
+
+    local data = {speed, direction}
     guihooks.trigger('ReceiveData', data)
-
 end
-
-local storedLoop = false
 
 local function stopWind()
     be:queueAllObjectLua('obj:setWind(0,0,0)')
-    local data = {0, 90}
-    guihooks.trigger('ReceiveData', data)
     storedLoop = false
+    guihooks.trigger('ReceiveData', {0, 90})
 end
 
 local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
