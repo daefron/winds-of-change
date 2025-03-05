@@ -1,9 +1,19 @@
 local M = {}
 
+local function onExtensionLoaded()
+    log('D', 'onExtensionLoaded', "Called")
+end
+
+local function onExtensionUnloaded()
+    log('D', 'onExtensionUnloaded', "Called")
+end
+
+-- helper function to generate initial values for wind object
 local function randomValue(max)
     return max * math.random()
 end
 
+-- object that stores last used wind data
 local wind = {
     direction = {
         value = randomValue(360),
@@ -17,6 +27,7 @@ local wind = {
     }
 }
 
+-- object that stores last used settings
 local storedSettings = {
     id = 0,
     minSpeed = 5,
@@ -30,9 +41,12 @@ local storedSettings = {
     verticalEnabled = false
 }
 
-local storedLoop = false
+-- pre calcualated degree to radians conversion; used once per frame
+local degToRad = math.pi / 180
 
+-- updates current wind values; used once per frame
 local function updateWind()
+    -- cache stored settings
     local minSpeed = storedSettings.minSpeed
     local maxSpeed = storedSettings.maxSpeed
     local minAngle = storedSettings.minAngle
@@ -40,21 +54,23 @@ local function updateWind()
     local speedChange = storedSettings.speedChange
     local angleChange = storedSettings.angleChange
     local verticalEnabled = storedSettings.verticalEnabled
-    if minSpeed == undefined or not maxSpeed == undefined or not minAngle == undefined or not maxAngle == undefined or
-        not speedChange == undefined or not angleChange == undefined then
+
+    -- stops function early if user has cleared setting field
+    if minSpeed == nil or maxSpeed == nil or minAngle == nil or maxAngle == nil or speedChange == nil or angleChange ==
+        nil then
         return
     end
 
+    -- function that determines what value in next frame will be
     local function changeValue(type, typeChange)
+        -- cache type data
         local windData = wind[type]
         local gap = windData.gap
         local change = windData.change
         local value = windData.value
 
-        -- generate random adjustment for "flow"
-        local randomAdjustment = ((math.random() - 0.5) / 100) * (typeChange / 10)
-
-        local adjustedGap = gap + randomAdjustment
+        -- generate random adjustment 
+        local adjustedGap = gap + ((math.random() - 0.5) / 100) * (typeChange / 10)
         local adjustedChange = change + adjustedGap
 
         -- max allowable change
@@ -96,38 +112,38 @@ local function updateWind()
         windData.value = clampedValue
     end
 
+    -- update direction and speed
     changeValue("direction", angleChange)
-    local radians = math.pi / 180
-    local radiansDirection = wind.direction.value * radians
-
     changeValue("speed", speedChange)
-    -- changes speed from m/s to km/h
+
+    -- convert angle into radians
+    local radiansDirection = wind.direction.value * degToRad
+
+    -- convert speed from m/s into km/h
     local kmhSpeed = wind.speed.value / 3.6
 
-    local xValue = math.sin(radiansDirection) * (kmhSpeed)
-    local zValue = math.cos(radiansDirection) * (kmhSpeed)
+    -- calculate vector coordinates
+    local xValue = math.sin(radiansDirection) * kmhSpeed
+    local zValue = math.cos(radiansDirection) * kmhSpeed
     local yValue = 0
+
+    -- add vertical wind if enabled
     if (verticalEnabled) then
         yValue = zValue + xValue
     end
-    be:queueAllObjectLua('obj:setWind(' .. tostring(xValue) .. "," .. tostring(zValue) .. "," .. tostring(yValue) .. ')')
+
+    -- queue changes to be sent to engine
+    local windString = string.format("obj:setWind(%f, %f, %f)", xValue, zValue, yValue)
+    be:queueAllObjectLua(windString)
 end
 
-local function onGuiUpdate()
-    if (storedSettings.windLoop) then
-        updateWind()
-        local data = {wind.speed.value, wind.direction.value}
-        guihooks.trigger('ReceiveData', data)
-    end
-end
 
-local function stopWind()
-    storedLoop = false
-    storedSettings.windLoop = false
-    be:queueAllObjectLua('obj:setWind(0,0,0)')
-    guihooks.trigger('ReceiveData', {0, 0})
-end
 
+local storedLoop = false
+
+
+
+-- updates the current wind values; used when user hits play while loop active
 local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
     wind = {
         direction = {
@@ -143,14 +159,9 @@ local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
     }
 end
 
-local function onExtensionLoaded()
-    log('D', 'onExtensionLoaded', "Called")
-end
 
-local function onExtensionUnloaded()
-    log('D', 'onExtensionUnloaded', "Called")
-end
 
+-- stores settings so not lost when state changes; used when any setting changed
 local function storeSettings(a, b, c, d, e, f, g, h, i, j)
     storedSettings = {
         id = a,
@@ -166,24 +177,43 @@ local function storeSettings(a, b, c, d, e, f, g, h, i, j)
     }
 end
 
+-- sends stored settings back to UI
 local function retrieveStoredSettings()
     guihooks.trigger('RetrieveSettings', storedSettings)
 
 end
 
+-- sends stored loop back to UI
 local function retrieveStoredLoop()
     guihooks.trigger('RetrieveLoop', storedLoop)
 end
 
+local function onGuiUpdate()
+    -- only updates and sends wind data if loop enabled by user
+    if (storedSettings.windLoop) then
+        updateWind()
+        guihooks.trigger('ReceiveData', {wind.speed.value, wind.direction.value})
+    end
+end
+
+-- stops wind; used when user clicks stop button
+local function stopWind()
+    -- wipe stored loops
+    storedLoop = false
+    storedSettings.windLoop = false
+
+    -- stop wind in engine
+    be:queueAllObjectLua('obj:setWind(0,0,0)')
+
+    -- tell UI that speed and angle is 0
+    guihooks.trigger('ReceiveData', {0, 0})
+end
+
 M.onExtensionLoaded = onExtensionLoaded
 M.onExtensionUnloaded = onExtensionUnloaded
-
 M.onGuiUpdate = onGuiUpdate
-
-M.updateWind = updateWind
 M.stopWind = stopWind
 M.refreshWind = refreshWind
-
 M.storeSettings = storeSettings
 M.retrieveStoredSettings = retrieveStoredSettings
 
