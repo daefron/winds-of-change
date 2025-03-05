@@ -14,6 +14,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
         });
 
         let windLoop;
+
+        // object of current wind values
         scope.values = {
           carDirection: 0,
           windDirection: 0,
@@ -22,7 +24,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
         };
 
         const windLines = document.getElementById("windLineHolder");
-        let frame = 0;
+
+        // object that holds current animation setting values
         const animationSettings = {
           lineCount: 16,
           radius: 110,
@@ -30,15 +33,20 @@ angular.module("beamng.apps").directive("windsOfChange", [
           frameSpeed: 1,
           moveDistance: 0,
           xSpacing: 30,
+          frame: 0
         };
+
+        // array of lines for wind animation
         scope.animationLines = makeLines(-250, 140);
 
+        // moves the lines one frame to make them visible
         for (const line of scope.animationLines) {
           for (const dash of line) {
             dash.update();
           }
         }
 
+        // default values for presets
         const defaultPresets = [
           {
             id: 0,
@@ -91,6 +99,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             angleChange: 1000,
           },
         ];
+
+        // object that holds all preset values
         scope.presets = cloneObject(defaultPresets);
 
         // helper function that changes to and from JSON to not affect original object
@@ -98,6 +108,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           return JSON.parse(JSON.stringify(object));
         }
 
+        // initial check to see if any stored settings
         bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
 
         // updates angle of animation based on player vehicle positioning
@@ -115,7 +126,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
           windLines.style.transform = "rotate(" + direction + "deg)";
         });
 
-        function updateSettings() {
+        // used any time settings need to be saved to Lua
+        function storeSettings() {
           // extra clamps for settings on top of html range
           scope.selectedPreset.minAngle = Math.max(
             Math.min(scope.selectedPreset.minAngle, 360),
@@ -168,23 +180,30 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
           // tells the Lua to process and send wind data
           windLoop = true;
-          updateSettings();
+          storeSettings();
         };
 
+        // used when user clicks stop button
         scope.endWind = function () {
           windLoop = false;
-          updateSettings();
+          storeSettings();
           bngApi.engineLua("extensions.windsOfChange.stopWind()");
         };
 
+        // used when user changes any setting
         scope.changeSetting = function () {
-          updateSettings();
+          storeSettings();
         };
 
+        // used when user changes the selected preset
         scope.changePreset = function () {
+          // sets selectedPreset to default values of new preset
           scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[scope.selectedPreset.id];
-          updateSettings();
+
+          storeSettings();
+
+          // updates wind values as may now be out of range
           bngApi.engineLua(
             "extensions.windsOfChange.refreshWind(" +
               scope.selectedPreset.minAngle +
@@ -198,23 +217,30 @@ angular.module("beamng.apps").directive("windsOfChange", [
           );
         };
 
+        // used when user clicks settings cog button
         scope.hideSettings = function () {
-          let settings = document.getElementById("settings");
+          // changes visibility state of settings modal
           if (!scope.settingsOpen) {
-            settings.style.display = "flex";
+            document.getElementById("settings").style.display = "flex";
             scope.settingsOpen = true;
           } else {
-            settings.style.display = "none";
+            document.getElementById("settings").style.display = "none";
             scope.settingsOpen = false;
           }
-          updateSettings();
+
+          storeSettings();
         };
 
+        // used when user clicks reset settings button
         scope.resetSettings = function () {
+          // sets selectedPreset to default values of current preset
           scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[scope.selectedPreset.id];
+
+          storeSettings();
+
+          // updates wind values if active
           if (windLoop) {
-            updateSettings();
             bngApi.engineLua(
               "extensions.windsOfChange.refreshWind(" +
                 scope.selectedPreset.minAngle +
@@ -229,6 +255,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
         };
 
+        // creates the lines for the wind animation
         function makeLines(min, max) {
           let lineHolder = [];
           for (let i = min; i <= max; i += animationSettings.spawnDistance) {
@@ -256,7 +283,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 }
 
                 update() {
-                  const Y = this.Y + frame;
+                  const Y = this.Y + animationSettings.frame;
                   this.yMarginRender = "margin-top: " + (Y + 50) + "px ; ";
 
                   this.distance = Math.sqrt(this.X ** 2 + Y ** 2);
@@ -299,6 +326,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           return lineHolder;
         }
 
+        // used when loop active and Lua returns wind data
         scope.$on("ReceiveData", function (_, data) {
           scope.$applyAsync(function () {
             const newSpeed = data[0];
@@ -321,8 +349,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
           if (scope.values.windSpeed > 80) {
             animationSettings.moveDistance = 80;
-            // } else if (scope.values.windSpeed < 25) {
-            // animationSettings.moveDistance = 25;
           } else {
             animationSettings.moveDistance = scope.values.windSpeed;
           }
@@ -333,9 +359,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
           } else {
             animationSettings.radius = scope.values.windSpeed;
           }
-          frame += animationSettings.frameSpeed;
-          if (frame >= animationSettings.spawnDistance) {
-            frame -= animationSettings.spawnDistance;
+          animationSettings.frame += animationSettings.frameSpeed;
+          if (animationSettings.frame >= animationSettings.spawnDistance) {
+            animationSettings.frame -= animationSettings.spawnDistance;
           }
 
           for (const line of scope.animationLines) {
@@ -345,6 +371,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
         });
 
+        // used when Lua returns settings data
         scope.$on("RetrieveSettings", function (_, data) {
           scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[data.id];
