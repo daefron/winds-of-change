@@ -128,36 +128,25 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         // used any time settings need to be saved to Lua
         function storeSettings() {
-          // extra clamps for settings on top of html range
-          scope.selectedPreset.minAngle = Math.max(
-            Math.min(scope.selectedPreset.minAngle, 360),
-            0
-          );
-          scope.selectedPreset.maxAngle = Math.max(
-            Math.min(scope.selectedPreset.maxAngle, 360),
-            0
-          );
+          // cache for performance
+          const preset = scope.selectedPreset;
 
-          let storedValues =
-            scope.selectedPreset.id +
-            "," +
-            scope.selectedPreset.minSpeed +
-            "," +
-            scope.selectedPreset.maxSpeed +
-            "," +
-            scope.selectedPreset.minAngle +
-            "," +
-            scope.selectedPreset.maxAngle +
-            "," +
-            scope.selectedPreset.speedChange +
-            "," +
-            scope.selectedPreset.angleChange +
-            "," +
-            scope.settingsOpen +
-            "," +
-            windLoop +
-            "," +
-            scope.verticalEnabled;
+          // extra clamps for settings on top of html range
+          preset.minAngle = Math.max(Math.min(preset.minAngle, 360), 0);
+          preset.maxAngle = Math.max(Math.min(preset.maxAngle, 360), 0);
+
+          let storedValues = [
+            preset.id,
+            preset.minSpeed,
+            preset.maxSpeed,
+            preset.minAngle,
+            preset.maxAngle,
+            preset.speedChange,
+            preset.angleChange,
+            scope.settingsOpen,
+            windLoop,
+            scope.verticalEnabled,
+          ].join(",");
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" + storedValues + ")"
           );
@@ -166,16 +155,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // used when user clicks start button
         scope.startWind = function () {
           // gives the wind a random position
+          const preset = scope.selectedPreset;
+          const presetValues = [
+            preset.minAngle,
+            preset.maxAngle,
+            preset.minSpeed,
+            preset.maxSpeed,
+          ].join(",");
           bngApi.engineLua(
-            "extensions.windsOfChange.refreshWind(" +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              ")"
+            "extensions.windsOfChange.refreshWind(" + presetValues + ")"
           );
 
           // tells the Lua to process and send wind data
@@ -199,21 +187,20 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.changePreset = function () {
           // sets selectedPreset to default values of new preset
           scope.presets = cloneObject(defaultPresets);
-          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
+          const preset = scope.presets[scope.selectedPreset.id];
+          scope.selectedPreset = preset;
 
           storeSettings();
 
           // updates wind values as may now be out of range
+          const presetValues = [
+            preset.minAngle,
+            preset.maxAngle,
+            preset.minSpeed,
+            preset.maxSpeed,
+          ].join(",");
           bngApi.engineLua(
-            "extensions.windsOfChange.refreshWind(" +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              ")"
+            "extensions.windsOfChange.refreshWind(" + presetValues + ")"
           );
         };
 
@@ -235,22 +222,21 @@ angular.module("beamng.apps").directive("windsOfChange", [
         scope.resetSettings = function () {
           // sets selectedPreset to default values of current preset
           scope.presets = cloneObject(defaultPresets);
-          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
+          const preset = scope.presets[scope.selectedPreset.id];
+          scope.selectedPreset = preset;
 
           storeSettings();
 
           // updates wind values if active
           if (windLoop) {
+            const presetValues = [
+              preset.minAngle,
+              preset.maxAngle,
+              preset.minSpeed,
+              preset.maxSpeed,
+            ].join(",");
             bngApi.engineLua(
-              "extensions.windsOfChange.refreshWind(" +
-                scope.selectedPreset.minAngle +
-                "," +
-                scope.selectedPreset.maxAngle +
-                "," +
-                scope.selectedPreset.minSpeed +
-                "," +
-                scope.selectedPreset.maxSpeed +
-                ")"
+              "extensions.windsOfChange.refreshWind(" + presetValues + ")"
             );
           }
         };
@@ -258,73 +244,75 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // creates the lines for the wind animation
         function makeLines(min, max) {
           // cache for performance
-          const xSpacing = animationSettings.xSpacing;
-          const lineCount = animationSettings.lineCount;
-          const radians = 180 / Math.PI;
+          const { xSpacing, lineCount, spawnDistance } = animationSettings;
+          const radiansToDegrees = 180 / Math.PI;
 
           let lineHolder = [];
-          for (let i = min; i <= max; i += animationSettings.spawnDistance) {
+          for (let i = min; i <= max; i += spawnDistance) {
             lineHolder.push(lineMaker(i));
-            function lineMaker(height) {
-              let lineArray = [];
-              for (let i = lineCount / 2; i >= 0; i--) {
-                lineArray.push((i - 0.9999) * -1); // -0.9999 to offset from 0
-              }
-              for (let i = 1; i <= lineCount / 2; i++) {
-                lineArray.push(i - 0.9999); // -0.9999 to offset from 0
-              }
-              class Dash {
-                constructor(xPos) {
-                  this.X = xPos * xSpacing;
-                  this.Y = height;
-                  this.defaultStyles =
-                    "width: 3px; " +
-                    "height: 10px; " +
-                    "background-color: white; " +
-                    "position: absolute; " +
-                    "left: " +
-                    (this.X + 147) +
-                    "px; ";
-                }
+          }
+          function lineMaker(height) {
+            const lineArray = [];
 
-                update(frame, moveDistance, radius) {
-                  const Y = this.Y + frame;
-                  this.yMarginRender = "margin-top: " + (Y + 50) + "px ; ";
-
-                  this.distance = Math.sqrt(this.X ** 2 + Y ** 2);
-
-                  if (this.distance < radius) {
-                    this.xMargin =
-                      (1 - this.distance ** 2 / radius ** 2) * moveDistance;
-                    if (this.X < 0) {
-                      this.xMargin *= -1;
-                    }
-                    this.xMarginRender = "margin-left: " + this.xMargin + "px;";
-                  } else {
-                    this.xMarginRender = "";
-                  }
-
-                  if (this.distance < radius) {
-                    this.rotation =
-                      Math.atan2(
-                        Y * (moveDistance / 300),
-                        this.X + this.xMargin
-                      ) * radians;
-                    this.rotationRender =
-                      "transform: rotate(" + this.rotation + "deg);";
-                  } else {
-                    this.rotationRender = "";
-                  }
-
-                  this.style =
-                    this.defaultStyles +
-                    this.yMarginRender +
-                    this.xMarginRender +
-                    this.rotationRender;
-                }
-              }
-              return Array.from(lineArray, (value) => new Dash(value));
+            // creates symmetrical line positions
+            for (let i = lineCount / 2; i >= -lineCount / 2; i--) {
+              lineArray.push(-(i - 0.9999)); // -0.9999 to offset from 0
             }
+            for (let i = 1; i <= lineCount / 2; i++) {
+              lineArray.push(i - 0.9999); // -0.9999 to offset from 0
+            }
+            class Dash {
+              constructor(xPos) {
+                this.X = xPos * xSpacing;
+                this.Y = height;
+                this.defaultStyles =
+                  "width: 3px; " +
+                  "height: 10px; " +
+                  "background-color: white; " +
+                  "position: absolute; " +
+                  "left: " +
+                  (this.X + 147) +
+                  "px; ";
+              }
+
+              update(
+                frame,
+                moveDistance,
+                moveDistanceDivided,
+                radiusSquared,
+                invRadiusSquared
+              ) {
+                const X = this.X;
+                const Y = this.Y + frame;
+                const distance = X ** 2 + Y ** 2;
+                const styleArray = [
+                  this.defaultStyles,
+                  "margin-top: ",
+                  Y + 50,
+                  "px;",
+                ];
+
+                if (distance < radiusSquared) {
+                  let xMargin =
+                    (1 - distance * invRadiusSquared) * moveDistance;
+                  if (X < 0) {
+                    xMargin = -xMargin;
+                  }
+                  const rotation =
+                    Math.atan2(Y * moveDistanceDivided, X + xMargin) *
+                    radiansToDegrees;
+                  styleArray.push(
+                    "margin-left:",
+                    xMargin,
+                    "px; transform:rotate(",
+                    rotation,
+                    "deg);"
+                  );
+                }
+                this.style = styleArray.join("");
+              }
+            }
+            return lineArray.map((value) => new Dash(value));
           }
           return lineHolder;
         }
@@ -372,12 +360,20 @@ angular.module("beamng.apps").directive("windsOfChange", [
             // cache values for performance
             const currentFrame = animationSettings.frame;
             const currentDistance = animationSettings.moveDistance;
-            const currentRadius = animationSettings.radius;
+            const currentDistanceDivided = currentDistance / 300;
+            const radiusSquared = animationSettings.radius ** 2;
+            const invRadiusSquared = 1 / radiusSquared;
 
             // updates position of all animation dashes
             for (const line of scope.animationLines) {
               for (const dash of line) {
-                dash.update(currentFrame, currentDistance, currentRadius);
+                dash.update(
+                  currentFrame,
+                  currentDistance,
+                  currentDistanceDivided,
+                  radiusSquared,
+                  invRadiusSquared
+                );
               }
             }
           });
