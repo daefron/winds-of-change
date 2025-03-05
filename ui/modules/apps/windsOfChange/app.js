@@ -166,7 +166,12 @@ angular.module("beamng.apps").directive("windsOfChange", [
           },
         ];
 
-        scope.presets = JSON.parse(JSON.stringify(defaultPresets));
+        // helper function that changes to and from JSON to not affect original object
+        function cloneObject(object) {
+          return JSON.parse(JSON.stringift(object));
+        }
+
+        scope.presets = cloneObject(defaultPresets);
 
         scope.verticalEnabled = false;
 
@@ -177,7 +182,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         };
 
         scope.changePreset = function () {
-          scope.presets = JSON.parse(JSON.stringify(defaultPresets));
+          scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[scope.selectedPreset.id];
           updateSettings();
           bngApi.engineLua(
@@ -308,7 +313,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         };
 
         scope.resetSettings = function () {
-          scope.presets = JSON.parse(JSON.stringify(defaultPresets));
+          scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[scope.selectedPreset.id];
           if (windLoop) {
             updateSettings();
@@ -373,7 +378,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         });
 
         scope.$on("RetrieveSettings", function (_, data) {
-          scope.presets = JSON.parse(JSON.stringify(defaultPresets));
+          scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[data.id];
           scope.selectedPreset.minSpeed = data.minSpeed;
           scope.selectedPreset.maxSpeed = data.maxSpeed;
