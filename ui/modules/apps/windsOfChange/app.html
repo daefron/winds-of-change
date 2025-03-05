@@ -9,7 +9,7 @@
     <div class="visualHolder">
       <div id="windLineHolder">
         <div ng-repeat="line in animationLines">
-          <div ng-repeat="dash in line" style="{{ dash.style }}"></div>
+          <div class="lineDash" ng-repeat="dash in line" style="{{ dash.style }}"></div>
         </div>
       </div>
       <svg class="arrow" viewBox="0 -1080 1080 1080">

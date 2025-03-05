@@ -27,22 +27,27 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         // object that holds current animation setting values
         const animationSettings = {
-          lineCount: 16,
+          lineCount: 10, // must be even number
           radius: 110,
           spawnDistance: 40,
           frameSpeed: 1,
           moveDistance: 0,
-          xSpacing: 30,
+          xSpacing: 40,
           frame: 0,
         };
 
         // array of lines for wind animation
         scope.animationLines = makeLines(-250, 140);
-
         // moves the lines one frame to make them visible
         for (const line of scope.animationLines) {
           for (const dash of line) {
-            dash.update(animationSettings.frame);
+            dash.update(
+              animationSettings.frame,
+              animationSettings.moveDistance,
+              animationSettings.moveDistance / (animationSettings.radius * 2.5),
+              animationSettings.radius ** 2,
+              1 / animationSettings.radius ** 2
+            );
           }
         }
 
@@ -265,14 +270,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
               constructor(xPos) {
                 this.X = xPos * xSpacing;
                 this.Y = height;
-                this.defaultStyles =
-                  "width: 3px; " +
-                  "height: 10px; " +
-                  "background-color: white; " +
-                  "position: absolute; " +
-                  "left: " +
-                  (this.X + 147) +
-                  "px; ";
+                this.left = "left: " + (this.X + 147) + "px; ";
               }
 
               update(
@@ -286,9 +284,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 const Y = this.Y + frame;
                 const distance = X ** 2 + Y ** 2;
                 const styleArray = [
-                  this.defaultStyles,
+                  this.left,
                   "margin-top: ",
-                  Y + 50,
+                  (Y + 50),
                   "px;",
                 ];
 
@@ -353,14 +351,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
             animationSettings.frame += animationSettings.frameSpeed;
 
             // resets frame back to relative original position
-            if (animationSettings.frame >= animationSettings.spawnDistance) {
-              animationSettings.frame %= animationSettings.spawnDistance;
+            if (animationSettings.frame > animationSettings.spawnDistance) {
+              animationSettings.frame -= animationSettings.spawnDistance;
             }
 
             // cache values for performance
             const currentFrame = animationSettings.frame;
             const currentDistance = animationSettings.moveDistance;
-            const currentDistanceDivided = currentDistance / 300;
+            const currentDistanceDivided =
+              currentDistance / (animationSettings.radius * 2.5);
             const radiusSquared = animationSettings.radius ** 2;
             const invRadiusSquared = 1 / radiusSquared;
 
