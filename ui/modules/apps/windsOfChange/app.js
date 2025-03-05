@@ -326,7 +326,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // used when loop active and Lua returns wind data
         scope.$on("ReceiveData", function (_, data) {
           scope.$applyAsync(function () {
-            // sets values to received data and fixes decimal for display
+              // sets values to received data and fixes decimal for display
             scope.values.windSpeed = data[0].toFixed(1);
             scope.values.windDirection = data[1].toFixed(1);
 

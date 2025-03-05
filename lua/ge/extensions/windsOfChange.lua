@@ -1,22 +1,20 @@
 local M = {}
 
+local groundCovers = nil
+
 local function onExtensionLoaded()
     log('D', 'onExtensionLoaded', "Called")
-end
-
-local function onExtensionUnloaded()
-    log('D', 'onExtensionUnloaded', "Called")
 end
 
 -- stops the wind from updating if true
 local gamePaused = false
 
 local function unpaused()
-    gamePaused = false 
+    gamePaused = false
 end
 
 local function paused()
-     gamePaused = true 
+    gamePaused = true
 end
 
 -- helper function to generate initial/refreshed values for wind object
@@ -138,11 +136,18 @@ local function updateWind()
         yValue = zValue + xValue
     end
 
+    -- applies wind to all ground cover
+    for i = 1, #groundCovers, 1 do
+        local currentGroundCover = scenetree.findObject(groundCovers[i])
+        if currentGroundCover ~= nil then
+            currentGroundCover.windDirection = Point2F(math.min(xValue / 3.6, 15), math.min(zValue / 3.6, 15))
+        end
+    end
+
     -- queue changes to be sent to engine
     local windString = string.format("obj:setWind(%f, %f, %f)", xValue, zValue, yValue)
     be:queueAllObjectLua(windString)
 end
-
 -- updates the current wind values; used when user hits play while loop active
 local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
     wind = {
@@ -184,6 +189,16 @@ end
 -- updates and sends wind data once per UI update if loop active
 local function onGuiUpdate()
     if (storedSettings.windLoop and gamePaused == false) then
+        if groundCovers == nil then
+            -- fetches all groundCover
+            groundCovers = scenetree.findSubClassObjects("GroundCover")
+            -- gives all ground cover a default wind speed to fall back to
+            for i = 1, #groundCovers, 1 do
+                local currentGroundCover = scenetree.findObject(groundCovers[i])
+                currentGroundCover.defaultDirection = currentGroundCover.windDirection
+            end
+        end
+
         updateWind()
         guihooks.trigger('ReceiveData', {wind.speed.value, wind.direction.value})
     end
@@ -194,8 +209,22 @@ local function stopWind()
     -- stop wind in engine
     be:queueAllObjectLua('obj:setWind(0,0,0)')
 
+    -- returns all ground cover wind speed to default
+    for i = 1, #groundCovers, 1 do
+        local currentGroundCover = scenetree.findObject(groundCovers[i])
+        if currentGroundCover ~= nil then
+            currentGroundCover.windDirection = currentGroundCover.defaultDirection
+        end
+    end
+
+    groundCovers = nil
     -- tell UI that speed and angle is 0
     guihooks.trigger('ReceiveData', {0, 0})
+end
+
+local function onExtensionUnloaded()
+    log('D', 'onExtensionUnloaded', "Called")
+    stopWind()
 end
 
 M.onExtensionLoaded = onExtensionLoaded
@@ -207,8 +236,5 @@ M.storeSettings = storeSettings
 M.retrieveStoredSettings = retrieveStoredSettings
 M.onPhysicsUnpaused = unpaused
 M.onPhysicsPaused = paused
-
-
-
 
 return M
