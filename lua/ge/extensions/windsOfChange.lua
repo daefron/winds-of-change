@@ -55,12 +55,6 @@ local function updateWind()
     local angleChange = storedSettings.angleChange
     local verticalEnabled = storedSettings.verticalEnabled
 
-    -- stops function early if user has cleared setting field
-    if minSpeed == nil or maxSpeed == nil or minAngle == nil or maxAngle == nil or speedChange == nil or angleChange ==
-        nil then
-        return
-    end
-
     -- function that determines what value in next frame will be
     local function changeValue(type, typeChange)
         -- cache type data

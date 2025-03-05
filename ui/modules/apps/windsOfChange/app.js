@@ -148,12 +148,26 @@ angular.module("beamng.apps").directive("windsOfChange", [
             preset.maxAngle,
             preset.speedChange,
             preset.angleChange,
+          ]
+          let invalid = false;
+          storedValues.forEach((value) => {
+            if (isNaN(value) || value === null) {
+              console.log("ASNKLJDAKBNSJDHH")
+              invalid = true;
+            }
+          });
+          if (invalid) {
+            return;
+          }
+          storedValues.push(
             scope.settingsOpen,
             windLoop,
-            scope.verticalEnabled,
-          ].join(",");
+            scope.verticalEnabled
+          );
           bngApi.engineLua(
-            "extensions.windsOfChange.storeSettings(" + storedValues + ")"
+            "extensions.windsOfChange.storeSettings(" +
+              storedValues.join(",") +
+              ")"
           );
         }
 
@@ -283,12 +297,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
                 const X = this.X;
                 const Y = this.Y + frame;
                 const distance = X ** 2 + Y ** 2;
-                const styleArray = [
-                  this.left,
-                  "margin-top: ",
-                  (Y + 50),
-                  "px;",
-                ];
+                const styleArray = [this.left, "margin-top: ", Y + 50, "px;"];
 
                 if (distance < radiusSquared) {
                   let xMargin =
