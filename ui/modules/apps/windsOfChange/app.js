@@ -125,6 +125,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             Math.min(scope.selectedPreset.maxAngle, 360),
             0
           );
+
           let storedValues =
             scope.selectedPreset.id +
             "," +
@@ -150,7 +151,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
           );
         }
 
+        // used when user clicks start button
         scope.startWind = function () {
+          // gives the wind a random position
           bngApi.engineLua(
             "extensions.windsOfChange.refreshWind(" +
               scope.selectedPreset.minAngle +
@@ -162,9 +165,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
               scope.selectedPreset.maxSpeed +
               ")"
           );
-          if (windLoop) {
-            return;
-          }
+
+          // tells the Lua to process and send wind data
           windLoop = true;
           updateSettings();
         };

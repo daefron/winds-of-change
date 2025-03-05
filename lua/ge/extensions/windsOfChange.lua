@@ -185,9 +185,6 @@ end
 
 -- stops wind; used when user clicks stop button
 local function stopWind()
-    -- wipe stored loop
-    storedSettings.windLoop = false
-
     -- stop wind in engine
     be:queueAllObjectLua('obj:setWind(0,0,0)')
 
