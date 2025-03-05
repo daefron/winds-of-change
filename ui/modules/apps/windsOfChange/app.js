@@ -14,7 +14,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
         });
 
         let windLoop;
-
         scope.values = {
           carDirection: 0,
           windDirection: 0,
@@ -22,10 +21,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           direction: 0,
         };
 
-        scope.settingsOpen = false;
-
         const windLines = document.getElementById("windLineHolder");
-
         let frame = 0;
         const animationSettings = {
           lineCount: 16,
@@ -35,13 +31,201 @@ angular.module("beamng.apps").directive("windsOfChange", [
           moveDistance: 0,
           xSpacing: 30,
         };
-
         scope.animationLines = makeLines(-250, 140);
+
         for (const line of scope.animationLines) {
           for (const dash of line) {
             dash.update();
           }
         }
+
+        const defaultPresets = [
+          {
+            id: 0,
+            name: "Light breeze",
+            minSpeed: 5,
+            maxSpeed: 20,
+            minAngle: 0,
+            maxAngle: 360,
+            speedChange: 5,
+            angleChange: 5,
+          },
+          {
+            id: 1,
+            name: "Moderate breeze",
+            minSpeed: 20,
+            maxSpeed: 35,
+            minAngle: 0,
+            maxAngle: 360,
+            speedChange: 10,
+            angleChange: 10,
+          },
+          {
+            id: 2,
+            name: "Stong breeze",
+            minSpeed: 35,
+            maxSpeed: 55,
+            minAngle: 0,
+            maxAngle: 360,
+            speedChange: 15,
+            angleChange: 15,
+          },
+          {
+            id: 3,
+            name: "Storm",
+            minSpeed: 85,
+            maxSpeed: 105,
+            minAngle: 0,
+            maxAngle: 360,
+            speedChange: 50,
+            angleChange: 30,
+          },
+          {
+            id: 4,
+            name: "Tornado",
+            minSpeed: 200,
+            maxSpeed: 350,
+            minAngle: 0,
+            maxAngle: 360,
+            speedChange: 1000,
+            angleChange: 1000,
+          },
+        ];
+        scope.presets = cloneObject(defaultPresets);
+
+        // helper function that changes to and from JSON to not affect original object
+        function cloneObject(object) {
+          return JSON.parse(JSON.stringify(object));
+        }
+
+        bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
+
+        // updates angle of animation based on player vehicle positioning
+        scope.$on("streamsUpdate", function (event, streams) {
+          // converts radians into degrees
+          let carDirection = streams.sensors.yaw / (Math.PI / 180);
+
+          // keeps within degree angle range
+          carDirection %= 360;
+
+          // sets animation direction as difference between wind and car angle
+          const direction = scope.values.windDirection - carDirection;
+
+          // spins animation lines
+          windLines.style.transform = "rotate(" + direction + "deg)";
+        });
+
+        function updateSettings() {
+          // extra clamps for settings on top of html range
+          scope.selectedPreset.minAngle = Math.max(
+            Math.min(scope.selectedPreset.minAngle, 360),
+            0
+          );
+          scope.selectedPreset.maxAngle = Math.max(
+            Math.min(scope.selectedPreset.maxAngle, 360),
+            0
+          );
+          let storedValues =
+            scope.selectedPreset.id +
+            "," +
+            scope.selectedPreset.minSpeed +
+            "," +
+            scope.selectedPreset.maxSpeed +
+            "," +
+            scope.selectedPreset.minAngle +
+            "," +
+            scope.selectedPreset.maxAngle +
+            "," +
+            scope.selectedPreset.speedChange +
+            "," +
+            scope.selectedPreset.angleChange +
+            "," +
+            scope.settingsOpen +
+            "," +
+            windLoop +
+            "," +
+            scope.verticalEnabled;
+          bngApi.engineLua(
+            "extensions.windsOfChange.storeSettings(" + storedValues + ")"
+          );
+        }
+
+        scope.startWind = function () {
+          bngApi.engineLua(
+            "extensions.windsOfChange.refreshWind(" +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              ")"
+          );
+          if (windLoop) {
+            return;
+          }
+          windLoop = true;
+          updateSettings();
+        };
+
+        scope.endWind = function () {
+          windLoop = false;
+          updateSettings();
+          bngApi.engineLua("extensions.windsOfChange.stopWind()");
+        };
+
+        scope.changeSetting = function () {
+          updateSettings();
+        };
+
+        scope.changePreset = function () {
+          scope.presets = cloneObject(defaultPresets);
+          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
+          updateSettings();
+          bngApi.engineLua(
+            "extensions.windsOfChange.refreshWind(" +
+              scope.selectedPreset.minAngle +
+              "," +
+              scope.selectedPreset.maxAngle +
+              "," +
+              scope.selectedPreset.minSpeed +
+              "," +
+              scope.selectedPreset.maxSpeed +
+              ")"
+          );
+        };
+
+        scope.hideSettings = function () {
+          let settings = document.getElementById("settings");
+          if (!scope.settingsOpen) {
+            settings.style.display = "flex";
+            scope.settingsOpen = true;
+          } else {
+            settings.style.display = "none";
+            scope.settingsOpen = false;
+          }
+          updateSettings();
+        };
+
+        scope.resetSettings = function () {
+          scope.presets = cloneObject(defaultPresets);
+          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
+          if (windLoop) {
+            updateSettings();
+            bngApi.engineLua(
+              "extensions.windsOfChange.refreshWind(" +
+                scope.selectedPreset.minAngle +
+                "," +
+                scope.selectedPreset.maxAngle +
+                "," +
+                scope.selectedPreset.minSpeed +
+                "," +
+                scope.selectedPreset.maxSpeed +
+                ")"
+            );
+          }
+        };
 
         function makeLines(min, max) {
           let lineHolder = [];
@@ -112,224 +296,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           }
           return lineHolder;
         }
-
-        const defaultPresets = [
-          {
-            id: 0,
-            name: "Light breeze",
-            minSpeed: 5,
-            maxSpeed: 20,
-            minAngle: 0,
-            maxAngle: 360,
-            speedChange: 5,
-            angleChange: 5,
-          },
-          {
-            id: 1,
-            name: "Moderate breeze",
-            minSpeed: 20,
-            maxSpeed: 35,
-            minAngle: 0,
-            maxAngle: 360,
-            speedChange: 10,
-            angleChange: 10,
-          },
-          {
-            id: 2,
-            name: "Stong breeze",
-            minSpeed: 35,
-            maxSpeed: 55,
-            minAngle: 0,
-            maxAngle: 360,
-            speedChange: 15,
-            angleChange: 15,
-          },
-          {
-            id: 3,
-            name: "Storm",
-            minSpeed: 85,
-            maxSpeed: 105,
-            minAngle: 0,
-            maxAngle: 360,
-            speedChange: 50,
-            angleChange: 30,
-          },
-          {
-            id: 4,
-            name: "Tornado",
-            minSpeed: 200,
-            maxSpeed: 350,
-            minAngle: 0,
-            maxAngle: 360,
-            speedChange: 1000,
-            angleChange: 1000,
-          },
-        ];
-
-        // helper function that changes to and from JSON to not affect original object
-        function cloneObject(object) {
-          return JSON.parse(JSON.stringift(object));
-        }
-
-        scope.presets = cloneObject(defaultPresets);
-
-        scope.verticalEnabled = false;
-
-        bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
-
-        scope.changeSetting = function () {
-          updateSettings();
-        };
-
-        scope.changePreset = function () {
-          scope.presets = cloneObject(defaultPresets);
-          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
-          updateSettings();
-          bngApi.engineLua(
-            "extensions.windsOfChange.refreshWind(" +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              ")"
-          );
-        };
-
-        // updates angle of animation based on player vehicle positioning
-        scope.$on("streamsUpdate", function (event, streams) {
-          // converts radians into degrees
-          let carDirection = streams.sensors.yaw / (Math.PI / 180);
-
-          // keeps within degree angle range
-          carDirection %= 360;
-
-          // sets animation direction as difference between wind and car angle
-          const direction = scope.values.windDirection - carDirection;
-
-          // spins animation lines
-          windLines.style.transform = "rotate(" + direction + "deg)";
-        });
-
-        function updateSettings() {
-          const minSpeed = scope.selectedPreset.minSpeed;
-          const maxSpeed = scope.selectedPreset.maxSpeed;
-          const minAngle = scope.selectedPreset.minAngle;
-          const maxAngle = scope.selectedPreset.maxAngle;
-          const speedChange = scope.selectedPreset.speedChange;
-          const angleChange = scope.selectedPreset.angleChange;
-          if (minSpeed > maxSpeed) {
-            scope.selectedPreset.maxSpeed = minSpeed;
-            scope.selectedPreset.minSpeed = maxSpeed;
-          }
-          if (maxSpeed < minSpeed) {
-            scope.selectedPreset.maxSpeed = minSpeed;
-            scope.selectedPreset.minSpeed = maxSpeed;
-          }
-          if (minAngle >= maxAngle) {
-            scope.selectedPreset.maxAngle = minAngle;
-            scope.selectedPreset.minAngle = maxAngle;
-          }
-          if (minAngle < 0) {
-            scope.selectedPreset.minAngle = 0;
-          }
-          if (minAngle > 360) {
-            scope.selectedPreset.minAngle = 360;
-          }
-          if (maxAngle < 0) {
-            scope.selectedPreset.maxAngle = 0;
-          }
-          if (maxAngle > 360) {
-            scope.selectedPreset.maxAngle = 360;
-          }
-          if (speedChange <= 0 || !speedChange) {
-            scope.selectedPreset.speedChange = 1;
-          }
-          if (angleChange <= 0 || !angleChange) {
-            scope.selectedPreset.angleChange = 1;
-          }
-          let storedValues =
-            scope.selectedPreset.id +
-            "," +
-            scope.selectedPreset.minSpeed +
-            "," +
-            scope.selectedPreset.maxSpeed +
-            "," +
-            scope.selectedPreset.minAngle +
-            "," +
-            scope.selectedPreset.maxAngle +
-            "," +
-            scope.selectedPreset.speedChange +
-            "," +
-            scope.selectedPreset.angleChange +
-            "," +
-            scope.settingsOpen +
-            "," +
-            windLoop +
-            "," +
-            scope.verticalEnabled;
-          bngApi.engineLua(
-            "extensions.windsOfChange.storeSettings(" + storedValues + ")"
-          );
-        }
-
-        scope.startWind = function () {
-          bngApi.engineLua(
-            "extensions.windsOfChange.refreshWind(" +
-              scope.selectedPreset.minAngle +
-              "," +
-              scope.selectedPreset.maxAngle +
-              "," +
-              scope.selectedPreset.minSpeed +
-              "," +
-              scope.selectedPreset.maxSpeed +
-              ")"
-          );
-          if (windLoop) {
-            return;
-          }
-          windLoop = true;
-          updateSettings();
-        };
-
-        scope.endWind = function () {
-          windLoop = false;
-          updateSettings();
-          bngApi.engineLua("extensions.windsOfChange.stopWind()");
-        };
-
-        scope.hideSettings = function () {
-          let settings = document.getElementById("settings");
-          if (!scope.settingsOpen) {
-            settings.style.display = "flex";
-            scope.settingsOpen = true;
-          } else {
-            settings.style.display = "none";
-            scope.settingsOpen = false;
-          }
-          updateSettings();
-        };
-
-        scope.resetSettings = function () {
-          scope.presets = cloneObject(defaultPresets);
-          scope.selectedPreset = scope.presets[scope.selectedPreset.id];
-          if (windLoop) {
-            updateSettings();
-            bngApi.engineLua(
-              "extensions.windsOfChange.refreshWind(" +
-                scope.selectedPreset.minAngle +
-                "," +
-                scope.selectedPreset.maxAngle +
-                "," +
-                scope.selectedPreset.minSpeed +
-                "," +
-                scope.selectedPreset.maxSpeed +
-                ")"
-            );
-          }
-        };
 
         scope.$on("ReceiveData", function (_, data) {
           scope.$applyAsync(function () {
