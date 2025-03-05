@@ -175,8 +175,8 @@ local function retrieveStoredSettings()
 
 end
 
+-- updates and sends wind data once per UI update if loop active
 local function onGuiUpdate()
-    -- only updates and sends wind data if loop enabled by user
     if (storedSettings.windLoop) then
         updateWind()
         guihooks.trigger('ReceiveData', {wind.speed.value, wind.direction.value})
