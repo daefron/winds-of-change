@@ -8,6 +8,17 @@ local function onExtensionUnloaded()
     log('D', 'onExtensionUnloaded', "Called")
 end
 
+-- stops the wind from updating if true
+local gamePaused = false
+
+local function unpaused()
+    gamePaused = false 
+end
+
+local function paused()
+     gamePaused = true 
+end
+
 -- helper function to generate initial/refreshed values for wind object
 local function randomValue(max)
     return max * math.random()
@@ -172,7 +183,7 @@ end
 
 -- updates and sends wind data once per UI update if loop active
 local function onGuiUpdate()
-    if (storedSettings.windLoop) then
+    if (storedSettings.windLoop and gamePaused == false) then
         updateWind()
         guihooks.trigger('ReceiveData', {wind.speed.value, wind.direction.value})
     end
@@ -194,5 +205,10 @@ M.stopWind = stopWind
 M.refreshWind = refreshWind
 M.storeSettings = storeSettings
 M.retrieveStoredSettings = retrieveStoredSettings
+M.onPhysicsUnpaused = unpaused
+M.onPhysicsPaused = paused
+
+
+
 
 return M

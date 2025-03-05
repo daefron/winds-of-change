@@ -152,7 +152,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           let invalid = false;
           storedValues.forEach((value) => {
             if (isNaN(value) || value === null) {
-              console.log("ASNKLJDAKBNSJDHH")
               invalid = true;
             }
           });
