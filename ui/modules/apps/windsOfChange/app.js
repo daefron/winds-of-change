@@ -33,7 +33,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           frameSpeed: 1,
           moveDistance: 0,
           xSpacing: 30,
-          frame: 0
+          frame: 0,
         };
 
         // array of lines for wind animation
@@ -42,7 +42,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // moves the lines one frame to make them visible
         for (const line of scope.animationLines) {
           for (const dash of line) {
-            dash.update();
+            dash.update(animationSettings.frame);
           }
         }
 
@@ -257,20 +257,25 @@ angular.module("beamng.apps").directive("windsOfChange", [
 
         // creates the lines for the wind animation
         function makeLines(min, max) {
+          // cache for performance
+          const xSpacing = animationSettings.xSpacing;
+          const lineCount = animationSettings.lineCount;
+          const radians = 180 / Math.PI;
+
           let lineHolder = [];
           for (let i = min; i <= max; i += animationSettings.spawnDistance) {
             lineHolder.push(lineMaker(i));
             function lineMaker(height) {
               let lineArray = [];
-              for (let i = animationSettings.lineCount / 2; i >= 0; i--) {
-                lineArray.push((i - 0.9999) * -1);
+              for (let i = lineCount / 2; i >= 0; i--) {
+                lineArray.push((i - 0.9999) * -1); // -0.9999 to offset from 0
               }
-              for (let i = 1; i <= animationSettings.lineCount / 2; i++) {
-                lineArray.push(i - 0.9999);
+              for (let i = 1; i <= lineCount / 2; i++) {
+                lineArray.push(i - 0.9999); // -0.9999 to offset from 0
               }
               class Dash {
                 constructor(xPos) {
-                  this.X = xPos * animationSettings.xSpacing;
+                  this.X = xPos * xSpacing;
                   this.Y = height;
                   this.defaultStyles =
                     "width: 3px; " +
@@ -282,16 +287,15 @@ angular.module("beamng.apps").directive("windsOfChange", [
                     "px; ";
                 }
 
-                update() {
-                  const Y = this.Y + animationSettings.frame;
+                update(frame, moveDistance, radius) {
+                  const Y = this.Y + frame;
                   this.yMarginRender = "margin-top: " + (Y + 50) + "px ; ";
 
                   this.distance = Math.sqrt(this.X ** 2 + Y ** 2);
 
-                  if (this.distance < animationSettings.radius) {
+                  if (this.distance < radius) {
                     this.xMargin =
-                      (1 - this.distance ** 2 / animationSettings.radius ** 2) *
-                      animationSettings.moveDistance;
+                      (1 - this.distance ** 2 / radius ** 2) * moveDistance;
                     if (this.X < 0) {
                       this.xMargin *= -1;
                     }
@@ -300,13 +304,12 @@ angular.module("beamng.apps").directive("windsOfChange", [
                     this.xMarginRender = "";
                   }
 
-                  if (this.distance < animationSettings.radius) {
+                  if (this.distance < radius) {
                     this.rotation =
                       Math.atan2(
-                        Y * (animationSettings.moveDistance / 300),
+                        Y * (moveDistance / 300),
                         this.X + this.xMargin
-                      ) *
-                      (180 / Math.PI);
+                      ) * radians;
                     this.rotationRender =
                       "transform: rotate(" + this.rotation + "deg);";
                   } else {
@@ -329,50 +332,60 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // used when loop active and Lua returns wind data
         scope.$on("ReceiveData", function (_, data) {
           scope.$applyAsync(function () {
-            const newSpeed = data[0];
-            const newDirection = data[1];
-            scope.values.windSpeed = Number(newSpeed.toFixed(1));
-            scope.values.windDirection = newDirection.toFixed(1);
-            if (scope.values.windDirection < 0) {
-              scope.values.windDirection = (
-                scope.values.windDirection + 360
-              ).toFixed(1);
+            // sets values to received data and fixes decimal for display
+            scope.values.windSpeed = data[0].toFixed(1);
+            scope.values.windDirection = data[1].toFixed(1);
+
+            // changes animation speed based on wind speed and dash gap
+            const newFrameSpeed = scope.values.windSpeed / 10;
+            const maxFrameSpeed = animationSettings.spawnDistance / 2;
+            if (newFrameSpeed < maxFrameSpeed) {
+              animationSettings.frameSpeed = newFrameSpeed;
+            } else {
+              animationSettings.frameSpeed = maxFrameSpeed;
+            }
+
+            // changes how far dashes move away from cursor based on wind speed
+            if (scope.values.windSpeed > 80) {
+              animationSettings.moveDistance = 80;
+            } else {
+              animationSettings.moveDistance = scope.values.windSpeed;
+            }
+
+            // changes how big the animation radius is based on wind speed
+            if (scope.values.windSpeed < 110) {
+              animationSettings.radius = 110;
+            } else if (scope.values.windSpeed > 160) {
+              animationSettings.radius = 160;
+            } else {
+              animationSettings.radius = scope.values.windSpeed;
+            }
+
+            // increments frame number by frameSpeed
+            animationSettings.frame += animationSettings.frameSpeed;
+
+            // resets frame back to relative original position
+            if (animationSettings.frame >= animationSettings.spawnDistance) {
+              animationSettings.frame %= animationSettings.spawnDistance;
+            }
+
+            // cache values for performance
+            const currentFrame = animationSettings.frame;
+            const currentDistance = animationSettings.moveDistance;
+            const currentRadius = animationSettings.radius;
+
+            // updates position of all animation dashes
+            for (const line of scope.animationLines) {
+              for (const dash of line) {
+                dash.update(currentFrame, currentDistance, currentRadius);
+              }
             }
           });
-          if (
-            scope.values.windSpeed / 10 <
-            animationSettings.spawnDistance / 2
-          ) {
-            animationSettings.frameSpeed = scope.values.windSpeed / 10;
-          } else {
-            animationSettings.frameSpeed = animationSettings.spawnDistance / 2;
-          }
-          if (scope.values.windSpeed > 80) {
-            animationSettings.moveDistance = 80;
-          } else {
-            animationSettings.moveDistance = scope.values.windSpeed;
-          }
-          if (scope.values.windSpeed < 110) {
-            animationSettings.radius = 110;
-          } else if (scope.values.windSpeed > 160) {
-            animationSettings.radius = 160;
-          } else {
-            animationSettings.radius = scope.values.windSpeed;
-          }
-          animationSettings.frame += animationSettings.frameSpeed;
-          if (animationSettings.frame >= animationSettings.spawnDistance) {
-            animationSettings.frame -= animationSettings.spawnDistance;
-          }
-
-          for (const line of scope.animationLines) {
-            for (const dash of line) {
-              dash.update();
-            }
-          }
         });
 
         // used when Lua returns settings data
         scope.$on("RetrieveSettings", function (_, data) {
+          // sets all settings to receieved settings
           scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[data.id];
           scope.selectedPreset.minSpeed = data.minSpeed;
@@ -382,11 +395,13 @@ angular.module("beamng.apps").directive("windsOfChange", [
           scope.selectedPreset.speedChange = data.speedChange;
           scope.selectedPreset.angleChange = data.angleChange;
           scope.settingsOpen = data.settingsOpen;
+          windLoop = data.windLoop;
+          scope.verticalEnabled = data.verticalEnabled;
+
+          // keeps settings open if was open
           if (scope.settingsOpen) {
             settings.style.display = "flex";
           }
-          windLoop = data.windLoop;
-          scope.verticalEnabled = data.verticalEnabled;
         });
       },
     };
