@@ -93,6 +93,7 @@ local function updateWind()
             -- keeps angle within standard angle range
             if maxAngle == 360 and minAngle == 0 then
                 clampedValue = updatedValue % 360
+                updatedValue = clampedValue
             else
                 clampedValue = math.max(math.min(updatedValue, maxAngle), minAngle)
             end
