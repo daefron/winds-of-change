@@ -8,7 +8,7 @@ local function onExtensionUnloaded()
     log('D', 'onExtensionUnloaded', "Called")
 end
 
--- helper function to generate initial values for wind object
+-- helper function to generate initial/refreshed values for wind object
 local function randomValue(max)
     return max * math.random()
 end
@@ -137,12 +137,6 @@ local function updateWind()
     be:queueAllObjectLua(windString)
 end
 
-
-
-local storedLoop = false
-
-
-
 -- updates the current wind values; used when user hits play while loop active
 local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
     wind = {
@@ -158,8 +152,6 @@ local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
         }
     }
 end
-
-
 
 -- stores settings so not lost when state changes; used when any setting changed
 local function storeSettings(a, b, c, d, e, f, g, h, i, j)
@@ -183,11 +175,6 @@ local function retrieveStoredSettings()
 
 end
 
--- sends stored loop back to UI
-local function retrieveStoredLoop()
-    guihooks.trigger('RetrieveLoop', storedLoop)
-end
-
 local function onGuiUpdate()
     -- only updates and sends wind data if loop enabled by user
     if (storedSettings.windLoop) then
@@ -198,8 +185,7 @@ end
 
 -- stops wind; used when user clicks stop button
 local function stopWind()
-    -- wipe stored loops
-    storedLoop = false
+    -- wipe stored loop
     storedSettings.windLoop = false
 
     -- stop wind in engine
