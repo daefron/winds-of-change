@@ -193,21 +193,19 @@ angular.module("beamng.apps").directive("windsOfChange", [
           );
         };
 
+        // updates angle of animation based on player vehicle positioning
         scope.$on("streamsUpdate", function (event, streams) {
-          scope.values.carDirection = (
-            (-streams.sensors.yaw * 360) /
-            (2 * Math.PI)
-          ).toFixed(2);
-          if (scope.values.carDirection < 0) {
-            scope.values.carDirection += 360;
-          }
-          scope.values.direction =
-            scope.values.windDirection - scope.values.carDirection;
-          if (scope.values.direction > 360) {
-            scope.values.direction -= 360;
-          }
-          windLines.style.transform =
-            "rotate(" + scope.values.direction + "deg)";
+          // converts radians into degrees
+          let carDirection = streams.sensors.yaw / (Math.PI / 180);
+
+          // keeps within degree angle range
+          carDirection %= 360;
+
+          // sets animation direction as difference between wind and car angle
+          const direction = scope.values.windDirection - carDirection;
+
+          // spins animation lines
+          windLines.style.transform = "rotate(" + direction + "deg)";
         });
 
         function updateSettings() {
