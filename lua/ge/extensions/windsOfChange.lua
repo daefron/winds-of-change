@@ -135,11 +135,11 @@ local function updateWind()
         yValue = zValue + xValue
     end
 
-    if storedSettings.groundCoverEnabled then
+    if storedSettings.groundCoverEnabled and groundCovers ~= nil then
         -- applies wind to all ground cover
         for i = 1, #groundCovers, 1 do
             local selectedCover = scenetree.findObject(groundCovers[i])
-            if selectedCover ~= nil then
+            if selectedCover ~= nil and selectedCover.defaultX ~= nil then
                 selectedCover.windDirection = Point2F(math.min(((selectedCover.defaultX) + xValue) / 3,
                     selectedCover.defaultX + 15), math.min((selectedCover.defaultY + zValue) / 3,
                     selectedCover.defaultY + 15))
@@ -148,7 +148,7 @@ local function updateWind()
         end
     end
 
-    if storedSettings.treesEnabled then
+    if storedSettings.treesEnabled and trees ~= nil then
         for i = 1, #trees, 1 do
             local selectedTree = scenetree.findObject(trees[i])
             if selectedTree ~= nil then
@@ -207,7 +207,7 @@ local function resetGroundCover()
     if groundCovers ~= nil then
         for i = 1, #groundCovers, 1 do
             local selectedCover = scenetree.findObject(groundCovers[i])
-            if selectedCover ~= nil then
+            if selectedCover ~= nil and selectedCover.defaultX ~= nil then
                 selectedCover.windDirection = Point2F(selectedCover.defaultX, selectedCover.defaultY)
                 selectedCover.windGustStrength = selectedCover.defaultGustStrength
             end
