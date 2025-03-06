@@ -24,7 +24,7 @@
   padding-right: 5px;
   position: absolute;
   flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 .settingsButton {
   position: absolute;
@@ -34,6 +34,13 @@
   height: 40px;
   margin-left: calc(50% - 20px);
   margin-top: 128px;
+}
+.refreshButton {
+  min-width: 0px;
+  min-height: 0px;
+  width: 40px;
+  height: 30px;
+  margin: 0px;
 }
 .settingsIcon {
   width: 30px;
@@ -68,19 +75,16 @@
   margin: 5px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 .inputHolderWide {
   justify-content: space-between;
 }
 
-.inputHolder > .tag {
-  width: 100px;
-  margin-right: 10px;
-}
 .inputHolderWide > input,
 .inputHolder > input {
-  width: 60px;
-  height: 30px;
+  width: 50px;
+  height: 24px;
 }
 .inputHolderWide > .tag {
   width: 150px;

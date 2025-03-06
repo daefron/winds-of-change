@@ -161,7 +161,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
           storedValues.push(
             scope.settingsOpen,
             windLoop,
-            scope.verticalEnabled
+            scope.verticalEnabled,
+            scope.groundCoverEnabled
           );
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" +
@@ -400,7 +401,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           scope.settingsOpen = data.settingsOpen;
           windLoop = data.windLoop;
           scope.verticalEnabled = data.verticalEnabled;
-
+          scope.groundCoverEnabled = data.groundCoverEnabled;
           // keeps settings open if was open
           if (scope.settingsOpen) {
             settings.style.display = "flex";

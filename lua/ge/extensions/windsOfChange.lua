@@ -47,7 +47,8 @@ local storedSettings = {
     angleChange = 5,
     settingsOpen = false,
     windLoop = false,
-    verticalEnabled = false
+    verticalEnabled = false,
+    groundCoverEnabled = true
 }
 
 -- pre calcualated degree to radians conversion; used once per frame
@@ -136,14 +137,16 @@ local function updateWind()
         yValue = zValue + xValue
     end
 
-    -- applies wind to all ground cover
-    for i = 1, #groundCovers, 1 do
-        local selectedCover = scenetree.findObject(groundCovers[i])
-        if selectedCover ~= nil then
-            selectedCover.windDirection = Point2F(math.min((selectedCover.defaultX) + xValue / 3,
-                (selectedCover.defaultX) + 15), math.min(selectedCover.defaultY + zValue / 3,
-                selectedCover.defaultY + 15))
-            selectedCover.windGustStrength = selectedCover.defaultGustStrength * ((math.random() / 25) + 0.98)
+    if storedSettings.groundCoverEnabled then
+        -- applies wind to all ground cover
+        for i = 1, #groundCovers, 1 do
+            local selectedCover = scenetree.findObject(groundCovers[i])
+            if selectedCover ~= nil then
+                selectedCover.windDirection = Point2F(math.min(((selectedCover.defaultX) + xValue) / 3,
+                    selectedCover.defaultX + 15), math.min((selectedCover.defaultY + zValue) / 3,
+                    selectedCover.defaultY + 15))
+                selectedCover.windGustStrength = selectedCover.defaultGustStrength * ((math.random() / 25) + 0.98)
+            end
         end
     end
 
@@ -168,7 +171,7 @@ local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
 end
 
 -- stores settings so not lost when state changes; used when any setting changed
-local function storeSettings(a, b, c, d, e, f, g, h, i, j)
+local function storeSettings(a, b, c, d, e, f, g, h, i, j, k)
     storedSettings = {
         id = a,
         minSpeed = b,
@@ -179,7 +182,8 @@ local function storeSettings(a, b, c, d, e, f, g, h, i, j)
         angleChange = g,
         settingsOpen = h,
         windLoop = i,
-        verticalEnabled = j
+        verticalEnabled = j,
+        groundCoverEnabled = k
     }
 end
 
@@ -189,20 +193,38 @@ local function retrieveStoredSettings()
 
 end
 
+-- returns all ground cover wind speed to default
+local function resetGroundCover()
+    if groundCovers ~= nil then
+        for i = 1, #groundCovers, 1 do
+            local selectedCover = scenetree.findObject(groundCovers[i])
+            if selectedCover ~= nil then
+                selectedCover.windDirection = Point2F(selectedCover.defaultX, selectedCover.defaultY)
+                selectedCover.windGustStrength = selectedCover.defaultGustStrength
+            end
+        end
+        groundCovers = nil
+    end
+end
+
 -- updates and sends wind data once per UI update if loop active
 local function onGuiUpdate()
     if (storedSettings.windLoop and gamePaused == false) then
-        if groundCovers == nil then
-            -- fetches all groundCover
-            groundCovers = scenetree.findSubClassObjects("GroundCover")
-            -- gives all ground cover a default wind speed to fall back to
-            for i = 1, #groundCovers, 1 do
-                local selectedCover = scenetree.findObject(groundCovers[i])
-                selectedCover.defaultDirection = selectedCover.windDirection
-                selectedCover.defaultX = selectedCover.windDirection.x
-                selectedCover.defaulty = selectedCover.windDirection.y
-                selectedCover.defaultGustStrength = selectedCover.windGustStrength
+        if storedSettings.groundCoverEnabled then
+            if groundCovers == nil then
+                -- fetches all groundCover
+                groundCovers = scenetree.findSubClassObjects("GroundCover")
+                -- gives all ground cover a default wind speed to fall back to
+                for i = 1, #groundCovers, 1 do
+                    local selectedCover = scenetree.findObject(groundCovers[i])
+                    selectedCover.defaultDirection = selectedCover.windDirection
+                    selectedCover.defaultX = selectedCover.windDirection.x
+                    selectedCover.defaulty = selectedCover.windDirection.y
+                    selectedCover.defaultGustStrength = selectedCover.windGustStrength
+                end
             end
+        else
+            resetGroundCover()
         end
 
         updateWind()
@@ -215,16 +237,8 @@ local function stopWind()
     -- stop wind in engine
     be:queueAllObjectLua('obj:setWind(0,0,0)')
 
-    -- returns all ground cover wind speed to default
-    for i = 1, #groundCovers, 1 do
-        local selectedCover = scenetree.findObject(groundCovers[i])
-        if selectedCover ~= nil then
-            selectedCover.windDirection = Point2F(selectedCover.defaultX, selectedCover.defaultY)
-            selectedCover.windGustStrength = selectedCover.defaultGustStrength
-        end
-    end
+    resetGroundCover()
 
-    groundCovers = nil
     -- tell UI that speed and angle is 0
     guihooks.trigger('ReceiveData', {0, 0})
 end
