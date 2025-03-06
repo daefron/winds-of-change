@@ -2,10 +2,6 @@ local M = {}
 
 local groundCovers = nil
 
-local function onExtensionLoaded()
-    log('D', 'onExtensionLoaded', "Called")
-end
-
 -- stops the wind from updating if true
 local gamePaused = false
 
@@ -203,13 +199,15 @@ local function resetGroundCover()
                 selectedCover.windGustStrength = selectedCover.defaultGustStrength
             end
         end
-        groundCovers = nil
     end
+    groundCovers = nil
 end
+
+local loaded = false
 
 -- updates and sends wind data once per UI update if loop active
 local function onGuiUpdate()
-    if (storedSettings.windLoop and gamePaused == false) then
+    if (storedSettings.windLoop and gamePaused == false and loaded == true) then
         if storedSettings.groundCoverEnabled then
             if groundCovers == nil then
                 -- fetches all groundCover
@@ -217,7 +215,6 @@ local function onGuiUpdate()
                 -- gives all ground cover a default wind speed to fall back to
                 for i = 1, #groundCovers, 1 do
                     local selectedCover = scenetree.findObject(groundCovers[i])
-                    selectedCover.defaultDirection = selectedCover.windDirection
                     selectedCover.defaultX = selectedCover.windDirection.x
                     selectedCover.defaulty = selectedCover.windDirection.y
                     selectedCover.defaultGustStrength = selectedCover.windGustStrength
@@ -241,6 +238,12 @@ local function stopWind()
 
     -- tell UI that speed and angle is 0
     guihooks.trigger('ReceiveData', {0, 0})
+end
+
+local function onExtensionLoaded()
+    log('D', 'onExtensionLoaded', "Called")
+    resetGroundCover()
+    loaded = true
 end
 
 local function onExtensionUnloaded()
