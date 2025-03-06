@@ -138,9 +138,12 @@ local function updateWind()
 
     -- applies wind to all ground cover
     for i = 1, #groundCovers, 1 do
-        local currentGroundCover = scenetree.findObject(groundCovers[i])
-        if currentGroundCover ~= nil then
-            currentGroundCover.windDirection = Point2F(math.min(xValue / 3.6, 15), math.min(zValue / 3.6, 15))
+        local selectedCover = scenetree.findObject(groundCovers[i])
+        if selectedCover ~= nil then
+            selectedCover.windDirection = Point2F(math.min((selectedCover.defaultX) + xValue / 3,
+                (selectedCover.defaultX) + 15), math.min(selectedCover.defaultY + zValue / 3,
+                selectedCover.defaultY + 15))
+            selectedCover.windGustStrength = selectedCover.defaultGustStrength * ((math.random() / 25) + 0.98)
         end
     end
 
@@ -194,8 +197,11 @@ local function onGuiUpdate()
             groundCovers = scenetree.findSubClassObjects("GroundCover")
             -- gives all ground cover a default wind speed to fall back to
             for i = 1, #groundCovers, 1 do
-                local currentGroundCover = scenetree.findObject(groundCovers[i])
-                currentGroundCover.defaultDirection = currentGroundCover.windDirection
+                local selectedCover = scenetree.findObject(groundCovers[i])
+                selectedCover.defaultDirection = selectedCover.windDirection
+                selectedCover.defaultX = selectedCover.windDirection.x
+                selectedCover.defaulty = selectedCover.windDirection.y
+                selectedCover.defaultGustStrength = selectedCover.windGustStrength
             end
         end
 
@@ -211,9 +217,10 @@ local function stopWind()
 
     -- returns all ground cover wind speed to default
     for i = 1, #groundCovers, 1 do
-        local currentGroundCover = scenetree.findObject(groundCovers[i])
-        if currentGroundCover ~= nil then
-            currentGroundCover.windDirection = currentGroundCover.defaultDirection
+        local selectedCover = scenetree.findObject(groundCovers[i])
+        if selectedCover ~= nil then
+            selectedCover.windDirection = Point2F(selectedCover.defaultX, selectedCover.defaultY)
+            selectedCover.windGustStrength = selectedCover.defaultGustStrength
         end
     end
 
