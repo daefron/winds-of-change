@@ -119,7 +119,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // updates angle of animation based on player vehicle positioning
         scope.$on("streamsUpdate", function (event, streams) {
           // converts radians into degrees
-          let carDirection = streams.sensors.yaw / (Math.PI / 180);
+          let carDirection = -streams.sensors.yaw / (Math.PI / 180);
 
           // keeps within degree angle range
           carDirection %= 360;
