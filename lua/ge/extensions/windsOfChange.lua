@@ -1,6 +1,7 @@
 local M = {}
 
 local groundCovers = nil
+local trees = nil
 
 -- stops the wind from updating if true
 local gamePaused = false
@@ -44,7 +45,8 @@ local storedSettings = {
     settingsOpen = false,
     windLoop = false,
     verticalEnabled = false,
-    groundCoverEnabled = true
+    groundCoverEnabled = true,
+    treesEnabled = true
 }
 
 -- pre calcualated degree to radians conversion; used once per frame
@@ -146,6 +148,16 @@ local function updateWind()
         end
     end
 
+    if storedSettings.treesEnabled then
+        for i = 1, #trees, 1 do
+            local selectedTree = scenetree.findObject(trees[i])
+            if selectedTree ~= nil then
+                selectedTree:setField('rotationEuler', 0, "0 0 " .. radiansDirection)
+                selectedTree.strength = math.min(wind.speed.value / 30, 5)
+            end
+        end
+    end
+
     -- queue changes to be sent to engine
     local windString = string.format("obj:setWind(%f, %f, %f)", xValue, zValue, yValue)
     be:queueAllObjectLua(windString)
@@ -167,7 +179,7 @@ local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
 end
 
 -- stores settings so not lost when state changes; used when any setting changed
-local function storeSettings(a, b, c, d, e, f, g, h, i, j, k)
+local function storeSettings(a, b, c, d, e, f, g, h, i, j, k, l)
     storedSettings = {
         id = a,
         minSpeed = b,
@@ -179,7 +191,8 @@ local function storeSettings(a, b, c, d, e, f, g, h, i, j, k)
         settingsOpen = h,
         windLoop = i,
         verticalEnabled = j,
-        groundCoverEnabled = k
+        groundCoverEnabled = k,
+        treesEnabled = l
     }
 end
 
@@ -203,6 +216,18 @@ local function resetGroundCover()
     groundCovers = nil
 end
 
+local function resetTrees()
+    if trees ~= nil then
+        for i = 1, #trees, 1 do
+            local selectedTree = scenetree.findObject(trees[i])
+            if selectedTree ~= nil then
+                selectedTree.strength = selectedTree.defaultStrength
+            end
+        end
+    end
+    trees = nil
+end
+
 local loaded = false
 
 -- updates and sends wind data once per UI update if loop active
@@ -219,9 +244,22 @@ local function onGuiUpdate()
                     selectedCover.defaulty = selectedCover.windDirection.y
                     selectedCover.defaultGustStrength = selectedCover.windGustStrength
                 end
+                -- (optional) transform string of the form: "pos.x
+                -- pos.y pos.z rot.x rot.y rot.z rot.angle
             end
         else
             resetGroundCover()
+        end
+        if storedSettings.treesEnabled then
+            if trees == nil then
+                trees = scenetree.findSubClassObjects("ForestWindEmitter")
+                for i = 1, #trees, 1 do
+                    local selectedTree = scenetree.findObject(trees[i])
+                    selectedTree.defaultStrength = selectedTree.strength
+                end
+            end
+        else
+            resetTrees()
         end
 
         updateWind()
@@ -235,6 +273,7 @@ local function stopWind()
     be:queueAllObjectLua('obj:setWind(0,0,0)')
 
     resetGroundCover()
+    resetTrees()
 
     -- tell UI that speed and angle is 0
     guihooks.trigger('ReceiveData', {0, 0})

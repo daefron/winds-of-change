@@ -148,7 +148,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             preset.maxAngle,
             preset.speedChange,
             preset.angleChange,
-          ]
+          ];
           let invalid = false;
           storedValues.forEach((value) => {
             if (isNaN(value) || value === null) {
@@ -162,7 +162,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.settingsOpen,
             windLoop,
             scope.verticalEnabled,
-            scope.groundCoverEnabled
+            scope.groundCoverEnabled,
+            scope.treesEnabled
           );
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" +
@@ -327,7 +328,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // used when loop active and Lua returns wind data
         scope.$on("ReceiveData", function (_, data) {
           scope.$applyAsync(function () {
-              // sets values to received data and fixes decimal for display
+            // sets values to received data and fixes decimal for display
             scope.values.windSpeed = data[0].toFixed(1);
             scope.values.windDirection = data[1].toFixed(1);
 
@@ -402,6 +403,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           windLoop = data.windLoop;
           scope.verticalEnabled = data.verticalEnabled;
           scope.groundCoverEnabled = data.groundCoverEnabled;
+          scope.treesEnabled = data.treesEnabled;
           // keeps settings open if was open
           if (scope.settingsOpen) {
             settings.style.display = "flex";
