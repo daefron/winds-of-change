@@ -199,7 +199,6 @@ end
 -- sends stored settings back to UI
 local function retrieveStoredSettings()
     guihooks.trigger('RetrieveSettings', storedSettings)
-
 end
 
 -- returns all ground cover wind speed to default
@@ -232,7 +231,7 @@ local loaded = false
 
 -- updates and sends wind data once per UI update if loop active
 local function onGuiUpdate()
-    if (storedSettings.windLoop and gamePaused == false and loaded == true) then
+    if (storedSettings.windLoop and gamePaused == false and loaded) then
         if storedSettings.groundCoverEnabled then
             if groundCovers == nil then
                 -- fetches all groundCover

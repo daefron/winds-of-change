@@ -26,14 +26,15 @@
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.7);
 }
-.settingsButton {
+.displayButton {
   position: absolute;
-  min-width: 0px;
-  min-height: 0px;
-  width: 40px;
-  height: 40px;
-  margin-left: calc(50% - 20px);
-  margin-top: 128px;
+  padding: 0px;
+  min-width: 36px;
+  min-height: 36px;
+  margin-left: calc(50% - 18px);
+}
+.displayIcon {
+  font-size: 26px;
 }
 .refreshButton {
   min-width: 0px;
@@ -41,11 +42,6 @@
   width: 40px;
   height: 30px;
   margin: 0px;
-}
-.settingsIcon {
-  width: 30px;
-  text-align: left;
-  font-size: 30px;
 }
 #windLineHolder {
   width: 600px;

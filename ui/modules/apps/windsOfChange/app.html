@@ -125,9 +125,7 @@
           />
         </div>
         <div class="inputHolderWide">
-          <span class="tag"
-            >Affect grass?</span
-          >
+          <span class="tag">Affect grass?</span>
           <input
             id="verticalEnabledInput"
             style="width: 30px"
@@ -136,21 +134,30 @@
             ng-model="groundCoverEnabled"
             ng-change="changeSetting()"
           />
-          <span class="tag"
-          >Affect trees?</span
-        >
-        <input
-          id="verticalEnabledInput"
-          style="width: 30px"
-          class="input input-light"
-          type="checkbox"
-          ng-model="treesEnabled"
-          ng-change="changeSetting()"
-        />
+          <span class="tag">Affect trees?</span>
+          <input
+            id="verticalEnabledInput"
+            style="width: 30px"
+            class="input input-light"
+            type="checkbox"
+            ng-model="treesEnabled"
+            ng-change="changeSetting()"
+          />
         </div>
       </div>
-      <md-button class="settingsButton" ng-click="hideSettings()">
-        <md-icon class="material-icons settingsIcon">settings</md-icon>
+      <md-button
+        class="displayButton"
+        ng-click="hideSettings()"
+        style="margin-top: 131px"
+      >
+        <md-icon class="material-icons displayIcon">settings</md-icon>
+      </md-button>
+      <md-button
+        class="displayButton"
+        ng-click="minimize()"
+        style="margin-top: -132px"
+      >
+        <md-icon class="material-icons displayIcon">cancel</md-icon>
       </md-button>
     </div>
     <div class="statHolder">
