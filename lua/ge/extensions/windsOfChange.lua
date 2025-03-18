@@ -244,8 +244,6 @@ local function onGuiUpdate()
                     selectedCover.defaulty = selectedCover.windDirection.y
                     selectedCover.defaultGustStrength = selectedCover.windGustStrength
                 end
-                -- (optional) transform string of the form: "pos.x
-                -- pos.y pos.z rot.x rot.y rot.z rot.angle
             end
         else
             resetGroundCover()
