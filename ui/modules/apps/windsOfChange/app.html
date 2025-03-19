@@ -4,10 +4,22 @@
     rel="stylesheet"
     href="/ui/modules/apps/windsOfChange/app.css"
   />
+  <!-- main container when maximized -->
   <div id="maximizedContainer">
-    <!-- main container when maximized -->
+    <!-- container for top section with animation/settings -->
     <div id="visualContainer">
-      <!-- container for top section with animation/settings -->
+      <div
+        id="windPie"
+        style="
+          width: 450px;
+          height: 450px;
+          position: absolute;
+          z-index: 10;
+          border-radius: 50%;
+          pointer-events: none;
+          display: none;
+        "
+      ></div>
       <div id="animationContainer">
         <div ng-repeat="line in animationLines">
           <div
@@ -160,9 +172,7 @@
       </md-button>
     </div>
     <div class="statContainer contentContainer">
-      <span class="stat"
-        >Speed: {{ values.windSpeed }} {{ speedUnit }}</span
-      >
+      <span class="stat">Speed: {{ values.windSpeed }} {{ speedUnit }}</span>
       <span class="stat">Angle: {{ values.windDirection }} °</span>
     </div>
     <div class="contentContainer">

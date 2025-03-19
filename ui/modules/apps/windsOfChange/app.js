@@ -126,18 +126,103 @@ angular.module("beamng.apps").directive("windsOfChange", [
         bngApi.engineLua("extensions.windsOfChange.retrieveStoredSettings()");
 
         // updates angle of animation based on player vehicle positioning
-        scope.$on("streamsUpdate", function (event, streams) {
+        scope.$on("streamsUpdate", function (_, streams) {
           // converts radians into degrees
-          let carDirection = -streams.sensors.yaw / (Math.PI / 180);
-
+          let carDirection =
+            (-streams.sensors.yaw / (Math.PI / 180) + 180) % 360;
           // keeps within degree angle range
-          carDirection %= 360;
 
           // sets animation direction as difference between wind and car angle
           const direction = scope.values.windDirection - carDirection;
 
           // spins animation lines
           animationContainer.style.transform = "rotate(" + direction + "deg)";
+
+          // early return if haven't yet loaded settings
+          if (!scope.selectedPreset) {
+            return;
+          }
+
+          // shows angle choice over animation if settings not default
+          if (
+            scope.selectedPreset.minAngle !== 0 ||
+            scope.selectedPreset.maxAngle !== 360
+          ) {
+            const diff = 360 - carDirection;
+            let minAngle = scope.selectedPreset.minAngle + diff;
+            let maxAngle = scope.selectedPreset.maxAngle + diff;
+
+            const white = "rgb(255, 255, 255) ";
+            const darkened = "rgba(0, 0, 0, 0.5) ";
+            const transparent = "rgba(0, 0, 0, 0) ";
+            const borderThickness = 1.5;
+
+            let gradient;
+
+            // inverts angles if overflow over 360
+            if (maxAngle > 360) {
+              const oldMin = minAngle;
+              minAngle = maxAngle %= 360;
+              maxAngle = oldMin;
+              gradient =
+                "conic-gradient(" +
+                transparent +
+                minAngle +
+                "deg," +
+                white +
+                minAngle +
+                "deg," +
+                white +
+                (minAngle + borderThickness) +
+                "deg," +
+                darkened +
+                (minAngle + borderThickness) +
+                "deg," +
+                darkened +
+                (maxAngle - borderThickness) +
+                "deg," +
+                white +
+                (maxAngle - borderThickness) +
+                "deg," +
+                white +
+                maxAngle +
+                "deg," +
+                transparent +
+                maxAngle +
+                "deg)";
+            } else {
+              gradient =
+                "conic-gradient(" +
+                darkened +
+                minAngle +
+                "deg," +
+                white +
+                minAngle +
+                "deg," +
+                white +
+                (minAngle + borderThickness) +
+                "deg," +
+                transparent +
+                (minAngle + borderThickness) +
+                "deg," +
+                transparent +
+                (maxAngle - borderThickness) +
+                "deg," +
+                white +
+                (maxAngle - borderThickness) +
+                "deg," +
+                white +
+                maxAngle +
+                "deg," +
+                darkened +
+                maxAngle +
+                "deg)";
+            }
+            windPie.style.display = "block";
+            windPie.style["background-image"] = gradient;
+          } else {
+            windPie.style.display = "none";
+          }
         });
 
         // used any time settings need to be saved to Lua
