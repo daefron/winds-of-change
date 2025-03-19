@@ -36,7 +36,7 @@
         />
       </svg>
       <div id="settings" style="display: none">
-        <div class="contentContainer">
+        <div class="contentContainer" style="margin-left: 38px">
           <span>Preset:</span>
           <md-select
             id="presetSelect"
@@ -166,7 +166,7 @@
       <md-button
         class="changeButton visualButton"
         ng-click="toggleSize()"
-        style="margin-top: -132px"
+        style="margin-top: -132px; margin-left: calc(-50% + 18px)"
       >
         <md-icon class="material-icons changeButtonIcon">remove_circle</md-icon>
       </md-button>
@@ -185,14 +185,6 @@
     </div>
   </div>
   <div id="minimizedContainer">
-    <md-button class="minimizedButton" ng-click="startWind()">
-      <md-icon class="material-icons minimizedIcon">play_arrow</md-icon>
-    </md-button>
-    <md-button class="minimizedButton" ng-click="endWind()">
-      <md-icon class="material-icons minimizedIcon">stop</md-icon>
-    </md-button>
-    <span>{{ values.windSpeed }} {{ speedUnit }}</span>
-    <span>{{ values.windDirection }} °</span>
     <md-button
       class="changeButton"
       ng-click="toggleSize()"
@@ -201,5 +193,13 @@
     >
       <md-icon class="material-icons changeButtonIcon">add_circle</md-icon>
     </md-button>
+    <md-button class="minimizedButton" ng-click="startWind()">
+      <md-icon class="material-icons minimizedIcon">play_arrow</md-icon>
+    </md-button>
+    <md-button class="minimizedButton" ng-click="endWind()">
+      <md-icon class="material-icons minimizedIcon">stop</md-icon>
+    </md-button>
+    <span>{{ values.windSpeed }} {{ speedUnit }}</span>
+    <span>{{ values.windDirection }} °</span>
   </div>
 </div>
