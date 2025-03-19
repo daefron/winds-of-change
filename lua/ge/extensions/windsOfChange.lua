@@ -46,7 +46,8 @@ local storedSettings = {
     windLoop = false,
     verticalEnabled = false,
     groundCoverEnabled = true,
-    treesEnabled = true
+    treesEnabled = true,
+    minimized = false
 }
 
 -- pre calcualated degree to radians conversion; used once per frame
@@ -179,7 +180,7 @@ local function refreshWind(minAngle, maxAngle, minSpeed, maxSpeed)
 end
 
 -- stores settings so not lost when state changes; used when any setting changed
-local function storeSettings(a, b, c, d, e, f, g, h, i, j, k, l)
+local function storeSettings(a, b, c, d, e, f, g, h, i, j, k, l, m)
     storedSettings = {
         id = a,
         minSpeed = b,
@@ -192,7 +193,8 @@ local function storeSettings(a, b, c, d, e, f, g, h, i, j, k, l)
         windLoop = i,
         verticalEnabled = j,
         groundCoverEnabled = k,
-        treesEnabled = l
+        treesEnabled = l,
+        minimized = m
     }
 end
 

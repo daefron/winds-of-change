@@ -23,8 +23,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           direction: 0,
         };
 
-        const windLines = document.getElementById("windLineHolder");
-
         // object that holds current animation setting values
         const animationSettings = {
           lineCount: 10, // must be even number
@@ -128,7 +126,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
           const direction = scope.values.windDirection - carDirection;
 
           // spins animation lines
-          windLines.style.transform = "rotate(" + direction + "deg)";
+          animationContainer.style.transform = "rotate(" + direction + "deg)";
         });
 
         // used any time settings need to be saved to Lua
@@ -163,7 +161,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             windLoop,
             scope.verticalEnabled,
             scope.groundCoverEnabled,
-            scope.treesEnabled
+            scope.treesEnabled,
+            scope.minimized
           );
           bngApi.engineLua(
             "extensions.windsOfChange.storeSettings(" +
@@ -186,7 +185,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
             "extensions.windsOfChange.refreshWind(" + presetValues + ")"
           );
 
-          // tells the Lua to process and send wind data
+          // tells Lua to process and send wind data
           windLoop = true;
           storeSettings();
         };
@@ -224,14 +223,33 @@ angular.module("beamng.apps").directive("windsOfChange", [
           );
         };
 
-        // used when user clicks settings cog button
+        // used when user clicks minimize/maximize button
+        scope.toggleSize = function () {
+          scope.minimized = !scope.minimized;
+          toggleSize();
+          storeSettings();
+        };
+
+        function toggleSize() {
+          if (scope.minimized) {
+            maximizedContainer.style.display = "none";
+            minimizedContainer.style.display = "flex";
+            windRoot.style.height = "auto";
+          } else {
+            minimizedContainer.style.display = "none";
+            maximizedContainer.style.display = "flex";
+            windRoot.style.height = "100%";
+          }
+        }
+
+        // used when user clicks settings button
         scope.hideSettings = function () {
           // changes visibility state of settings modal
           if (!scope.settingsOpen) {
-            document.getElementById("settings").style.display = "flex";
+            settings.style.display = "flex";
             scope.settingsOpen = true;
           } else {
-            document.getElementById("settings").style.display = "none";
+            settings.style.display = "none";
             scope.settingsOpen = false;
           }
 
@@ -404,9 +422,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
           scope.verticalEnabled = data.verticalEnabled;
           scope.groundCoverEnabled = data.groundCoverEnabled;
           scope.treesEnabled = data.treesEnabled;
+          scope.minimized = data.minimized;
           // keeps settings open if was open
           if (scope.settingsOpen) {
             settings.style.display = "flex";
+          }
+          // minimizes app if was minimized
+          if (scope.minimized) {
+            toggleSize();
           }
         });
       },

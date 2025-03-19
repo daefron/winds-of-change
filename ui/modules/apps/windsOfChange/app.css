@@ -1,4 +1,5 @@
-#windsOfChangeContainer {
+/* ~~~~ main container for when maximized ~~~~ */
+#maximizedContainer {
   width: 100%;
   height: 100%;
   display: flex;
@@ -7,7 +8,8 @@
   margin: 0;
   padding: 0;
 }
-.visualHolder {
+/* ~~~~ container for top element with animation/settings ~~~~ */
+#visualContainer {
   width: 300px;
   height: 300px;
   display: flex;
@@ -17,33 +19,26 @@
   overflow: hidden;
   border-bottom: solid 1px white;
 }
-#settings {
-  width: calc(100% - 10px);
-  height: 300px;
-  padding-left: 5px;
-  padding-right: 5px;
-  position: absolute;
-  flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.7);
-}
-.displayButton {
-  position: absolute;
-  padding: 0px;
-  min-width: 36px;
-  min-height: 36px;
-  margin-left: calc(50% - 18px);
-}
-.displayIcon {
-  font-size: 26px;
-}
-.refreshButton {
+/* buttons that change the state of the ui */
+.changeButton {
+  height: 36px;
   min-width: 0px;
   min-height: 0px;
-  width: 40px;
-  height: 30px;
+  padding: 5px;
   margin: 0px;
 }
-#windLineHolder {
+/* floating buttons in visual */
+.visualButton {
+  position: absolute;
+  margin-left: calc(50% - 18px);
+}
+/* icons used in float buttons */
+.changeButtonIcon {
+  font-size: 26px;
+  vertical-align: baseline;
+}
+/* ~~~~ container for animation ~~~~ */
+#animationContainer {
   width: 600px;
   height: 600px;
   display: flex;
@@ -51,57 +46,109 @@
   align-items: center;
   transform-origin: 150px 300px;
 }
-.arrow {
+/* player icon in animation */
+#arrow {
   position: absolute;
   width: 20%;
   height: 20%;
 }
-.statHolder {
-  display: flex;
-  justify-content: space-between;
-  margin-top: auto;
-}
-.stat {
-  margin: 10px;
-  margin-bottom: 2px;
-}
-.inputHolder,
-.inputHolderWide,
-.buttonHolder {
-  margin: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.inputHolderWide {
-  justify-content: space-between;
-}
-
-.inputHolderWide > input,
-.inputHolder > input {
-  width: 50px;
-  height: 24px;
-  margin: 0px;
-}
-#settings > button {
-  font-weight: bold;
-  background-color: rgba(0, 0, 0, 0.3);
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-.buttonHolder {
-  justify-content: space-between;
-}
-.buttonHolder > .button {
-  width: calc(50% - 5px);
-  margin: 0px;
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
+/* animation dashes */
 .lineDash {
   width: 3px;
   height: 10px;
   background-color: white;
   position: absolute;
 }
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~ container for settings ~~~~ */
+#settings {
+  width: 100%;
+  height: 300px;
+  position: absolute;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+/* input to select presets */
+#presetSelect {
+  height: 24px;
+  flex-grow: 0.6;
+  margin-top: -8px;
+}
+#presetSelect > .md-select-value {
+  height: 24px;
+  line-height: 24px;
+  min-height: 24px;
+}
+/* button to reset settings to default */
+#resetButton {
+  min-width: 0px;
+  min-height: 0px;
+  width: 45px;
+  height: 24px;
+  padding: 0px;
+  margin: 0px;
+  margin-right: 34px;
+}
+#resetButton > .material-icons {
+  font-size: 22px;
+  line-height: 24px;
+  vertical-align: baseline;
+}
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~ all small, wide containers ~~~~ */
+.contentContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px;
+}
+.contentContainer > input {
+  width: 50px;
+  height: 24px;
+  margin: 0px;
+}
+.contentContainer > .input-light {
+  flex-grow: 0.3;
+}
+.contentContainer > button {
+  width: calc(50% - 5px);
+  margin: 0px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* container for stats beneath visual */
+.statContainer {
+  margin: 0px;
+  margin-top: auto;
+  padding: 5px;
+}
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~ main container for when minimized ~~~~ */
+#minimizedContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+/* all buttons */
+.minimizedButton {
+  width: calc(100% / 8);
+  height: 36px;
+  min-width: 0px;
+  min-height: 0px;
+  padding: 5px;
+  margin: 0px;
+}
+/* all icons */
+.minimizedIcon {
+  font-size: 26px;
+  vertical-align: baseline;
+}
+/* all text */
+#minimizedContainer > span {
+  flex-grow: 1;
+  line-height: 36px;
+  text-align: center;
+}
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
