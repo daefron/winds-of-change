@@ -149,8 +149,8 @@ angular.module("beamng.apps").directive("windsOfChange", [
             scope.selectedPreset.maxAngle !== 360
           ) {
             const diff = 360 - carDirection;
-            let minAngle = scope.selectedPreset.minAngle + diff;
-            let maxAngle = scope.selectedPreset.maxAngle + diff;
+            let minAngle = (scope.selectedPreset.minAngle + diff) % 360;
+            let maxAngle = (scope.selectedPreset.maxAngle + diff) % 360;
 
             const white = "rgb(255, 255, 255) ";
             const darkened = "rgba(0, 0, 0, 0.5) ";
@@ -158,37 +158,35 @@ angular.module("beamng.apps").directive("windsOfChange", [
             const borderThickness = 1.5;
 
             let gradient;
-
-            // inverts angles if overflow over 360
-            if (maxAngle > 360) {
-              const oldMin = minAngle;
-              minAngle = maxAngle %= 360;
-              maxAngle = oldMin;
+            // inverts angles if max less than min
+            if (maxAngle < minAngle) {
+              const newMinAngle = maxAngle;
+              const newMaxAngle = minAngle;
               gradient =
                 "conic-gradient(" +
                 transparent +
-                minAngle +
+                newMinAngle +
                 "deg," +
                 white +
-                minAngle +
+                newMinAngle +
                 "deg," +
                 white +
-                (minAngle + borderThickness) +
+                (newMinAngle + borderThickness) +
                 "deg," +
                 darkened +
-                (minAngle + borderThickness) +
+                (newMinAngle + borderThickness) +
                 "deg," +
                 darkened +
-                (maxAngle - borderThickness) +
+                (newMaxAngle - borderThickness) +
                 "deg," +
                 white +
-                (maxAngle - borderThickness) +
+                (newMaxAngle - borderThickness) +
                 "deg," +
                 white +
-                maxAngle +
+                newMaxAngle +
                 "deg," +
                 transparent +
-                maxAngle +
+                newMaxAngle +
                 "deg)";
             } else {
               gradient =
