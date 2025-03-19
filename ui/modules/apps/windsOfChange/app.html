@@ -4,8 +4,10 @@
     rel="stylesheet"
     href="/ui/modules/apps/windsOfChange/app.css"
   />
-  <div id="maximizedContainer"> <!-- main container when maximized -->
-    <div id="visualContainer"> <!-- container for top section with animation/settings -->
+  <div id="maximizedContainer">
+    <!-- main container when maximized -->
+    <div id="visualContainer">
+      <!-- container for top section with animation/settings -->
       <div id="animationContainer">
         <div ng-repeat="line in animationLines">
           <div
@@ -41,7 +43,7 @@
           <span>Speed range:</span>
           <input
             id="minSpeedInput"
-            class=" input-light input"
+            class="input-light input"
             type="number"
             min="0"
             max="{{ selectedPreset.maxSpeed }}"
@@ -52,20 +54,20 @@
           <span>&nbsp;-&nbsp;</span>
           <input
             id="maxSpeedInput"
-            class=" input-light input"
+            class="input-light input"
             type="number"
             min="{{ selectedPreset.minSpeed }}"
             ng-model="selectedPreset.maxSpeed"
             ng-value="maxSpeed"
             ng-change="changeSetting()"
           />
-          <span class="speedType">&nbsp;km/h</span>
+          <span class="speedType">&nbsp;{{ speedUnit }}</span>
         </div>
         <div class="contentContainer">
           <span>Angle range:</span>
           <input
             id="minAngleInput"
-            class=" input-light input"
+            class="input-light input"
             type="number"
             min="0"
             max="{{ selectedPreset.maxAngle }}"
@@ -76,7 +78,7 @@
           <span>&nbsp;-&nbsp;</span>
           <input
             id="maxAngleInput"
-            class=" input-light input"
+            class="input-light input"
             type="number"
             min="{{ selectedPreset.minAngle }}"
             max="360"
@@ -90,7 +92,7 @@
           <span>Speed randomness:</span>
           <input
             id="speedChangeInput"
-            class=" input-light input"
+            class="input-light input"
             type="number"
             min="1"
             ng-model="selectedPreset.speedChange"
@@ -102,7 +104,7 @@
           <span>Angle randomness:</span>
           <input
             id="angleChangeInput"
-            class=" input-light input"
+            class="input-light input"
             type="number"
             min="1"
             ng-model="selectedPreset.angleChange"
@@ -111,13 +113,11 @@
           />
         </div>
         <div class="contentContainer">
-          <span style="width: 100%"
-            >Vertical wind? (experimental)</span
-          >
+          <span style="width: 100%">Vertical wind? (experimental)</span>
           <input
             id="verticalEnabledInput"
             style="width: 30px"
-            class=" input"
+            class="input"
             type="checkbox"
             ng-model="verticalEnabled"
             ng-change="changeSetting()"
@@ -128,7 +128,7 @@
           <input
             id="verticalEnabledInput"
             style="width: 30px"
-            class=" input"
+            class="input"
             type="checkbox"
             ng-model="groundCoverEnabled"
             ng-change="changeSetting()"
@@ -137,7 +137,7 @@
           <input
             id="verticalEnabledInput"
             style="width: 30px"
-            class=" input"
+            class="input"
             type="checkbox"
             ng-model="treesEnabled"
             ng-change="changeSetting()"
@@ -160,7 +160,9 @@
       </md-button>
     </div>
     <div class="statContainer contentContainer">
-      <span class="stat">Speed: {{ values.windSpeed }} km/h</span>
+      <span class="stat"
+        >Speed: {{ values.windSpeed }} {{ speedUnit }}</span
+      >
       <span class="stat">Angle: {{ values.windDirection }} °</span>
     </div>
     <div class="contentContainer">
@@ -179,7 +181,7 @@
     <md-button class="minimizedButton" ng-click="endWind()">
       <md-icon class="material-icons minimizedIcon">stop</md-icon>
     </md-button>
-    <span>{{ values.windSpeed }} km/h</span>
+    <span>{{ values.windSpeed }} {{ speedUnit }}</span>
     <span>{{ values.windDirection }} °</span>
     <md-button
       class="changeButton"

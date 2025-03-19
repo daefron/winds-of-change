@@ -5,7 +5,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
       replace: true,
       scope: true,
       restrict: "EA",
-      link: function (scope, element, attrs) {
+      link: function (scope) {
         var streamsList = ["sensors"];
         StreamsManager.add(streamsList);
 
@@ -22,6 +22,9 @@ angular.module("beamng.apps").directive("windsOfChange", [
           windSpeed: 0,
           direction: 0,
         };
+
+        // user speed measurement unit (km/h or mph)
+        scope.speedUnit = UiUnits.speed().unit;
 
         // object that holds current animation setting values
         const animationSettings = {
@@ -103,6 +106,14 @@ angular.module("beamng.apps").directive("windsOfChange", [
           },
         ];
 
+        // changes preset speed values if Imperial
+        if (scope.speedUnit === "mph") {
+          defaultPresets.forEach((preset) => {
+            preset.minSpeed = parseInt(preset.minSpeed / 1.609);
+            preset.maxSpeed = parseInt(preset.maxSpeed / 1.609);
+          });
+        }
+
         // object that holds all preset values
         scope.presets = cloneObject(defaultPresets);
 
@@ -137,7 +148,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           // extra clamps for settings on top of html range
           preset.minAngle = Math.max(Math.min(preset.minAngle, 360), 0);
           preset.maxAngle = Math.max(Math.min(preset.maxAngle, 360), 0);
-
           let storedValues = [
             preset.id,
             preset.minSpeed,
@@ -208,7 +218,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           scope.presets = cloneObject(defaultPresets);
           const preset = scope.presets[scope.selectedPreset.id];
           scope.selectedPreset = preset;
-
           storeSettings();
 
           // updates wind values as may now be out of range
@@ -252,7 +261,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
             settings.style.display = "none";
             scope.settingsOpen = false;
           }
-
           storeSettings();
         };
 
@@ -262,7 +270,6 @@ angular.module("beamng.apps").directive("windsOfChange", [
           scope.presets = cloneObject(defaultPresets);
           const preset = scope.presets[scope.selectedPreset.id];
           scope.selectedPreset = preset;
-
           storeSettings();
 
           // updates wind values if active
@@ -346,12 +353,13 @@ angular.module("beamng.apps").directive("windsOfChange", [
         // used when loop active and Lua returns wind data
         scope.$on("ReceiveData", function (_, data) {
           scope.$applyAsync(function () {
-            // sets values to received data and fixes decimal for display
-            scope.values.windSpeed = data[0].toFixed(1);
+            const receivedSpeed = data[0];
+            scope.values.windSpeed = receivedSpeed.toFixed(1);
             scope.values.windDirection = data[1].toFixed(1);
+            scope.speedUnit = UiUnits.speed().unit;
 
             // changes animation speed based on wind speed and dash gap
-            const newFrameSpeed = scope.values.windSpeed / 10;
+            const newFrameSpeed = receivedSpeed / 10;
             const maxFrameSpeed = animationSettings.spawnDistance / 2;
             if (newFrameSpeed < maxFrameSpeed) {
               animationSettings.frameSpeed = newFrameSpeed;
@@ -360,19 +368,19 @@ angular.module("beamng.apps").directive("windsOfChange", [
             }
 
             // changes how far dashes move away from cursor based on wind speed
-            if (scope.values.windSpeed > 80) {
+            if (receivedSpeed > 80) {
               animationSettings.moveDistance = 80;
             } else {
-              animationSettings.moveDistance = scope.values.windSpeed;
+              animationSettings.moveDistance = receivedSpeed;
             }
 
             // changes how big the animation radius is based on wind speed
-            if (scope.values.windSpeed < 110) {
+            if (receivedSpeed < 110) {
               animationSettings.radius = 110;
-            } else if (scope.values.windSpeed > 160) {
+            } else if (receivedSpeed > 160) {
               animationSettings.radius = 160;
             } else {
-              animationSettings.radius = scope.values.windSpeed;
+              animationSettings.radius = receivedSpeed;
             }
 
             // increments frame number by frameSpeed
