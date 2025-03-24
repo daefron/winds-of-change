@@ -4,22 +4,11 @@
     rel="stylesheet"
     href="/ui/modules/apps/windsOfChange/app.css"
   />
-  <!-- main container when maximized -->
   <div id="maximizedContainer">
-    <!-- container for top section with animation/settings -->
     <div id="visualContainer">
-      <div
-        id="windPie"
-        style="
-          width: 450px;
-          height: 450px;
-          position: absolute;
-          z-index: 10;
-          border-radius: 50%;
-          pointer-events: none;
-          display: none;
-        "
-      ></div>
+      
+      <div id="windPie"></div>
+
       <div id="animationContainer">
         <div ng-repeat="line in animationLines">
           <div
@@ -29,12 +18,14 @@
           ></div>
         </div>
       </div>
-      <svg id="arrow" viewBox="0 -1080 1080 1080">
+
+      <svg id="arrow" viewBox="0 -1000 1000 1000">
         <path
           fill="white"
           d="m200-120-40-40 320-720 320 720-40 40-280-120zm84-124 196-84 196 84-196-440zm196-84"
         />
       </svg>
+      
       <div id="settings" style="display: none">
         <div class="contentContainer" style="margin-left: 38px">
           <span>Preset:</span>
@@ -51,6 +42,7 @@
             <md-icon class="material-icons settingsIcon">refresh</md-icon>
           </md-button>
         </div>
+        
         <div class="contentContainer">
           <span>Speed range:</span>
           <input
@@ -60,7 +52,6 @@
             min="0"
             max="{{ selectedPreset.maxSpeed }}"
             ng-model="selectedPreset.minSpeed"
-            ng-value="minSpeed"
             ng-change="changeSetting()"
           />
           <span>&nbsp;-&nbsp;</span>
@@ -70,11 +61,11 @@
             type="number"
             min="{{ selectedPreset.minSpeed }}"
             ng-model="selectedPreset.maxSpeed"
-            ng-value="maxSpeed"
             ng-change="changeSetting()"
           />
           <span class="speedType">&nbsp;{{ speedUnit }}</span>
         </div>
+
         <div class="contentContainer">
           <span>Angle range:</span>
           <input
@@ -84,7 +75,6 @@
             min="0"
             max="{{ selectedPreset.maxAngle }}"
             ng-model="selectedPreset.minAngle"
-            ng-value="minAngle"
             ng-change="changeSetting()"
           />
           <span>&nbsp;-&nbsp;</span>
@@ -95,11 +85,11 @@
             min="{{ selectedPreset.minAngle }}"
             max="360"
             ng-model="selectedPreset.maxAngle"
-            ng-value="maxAngle"
             ng-change="changeSetting()"
           />
           <span>&nbsp;°</span>
         </div>
+        
         <div class="contentContainer">
           <span>Speed randomness:</span>
           <input
@@ -108,10 +98,10 @@
             type="number"
             min="1"
             ng-model="selectedPreset.speedChange"
-            ng-value="speedChange"
             ng-blur="changeSetting()"
           />
         </div>
+        
         <div class="contentContainer">
           <span>Angle randomness:</span>
           <input
@@ -120,26 +110,23 @@
             type="number"
             min="1"
             ng-model="selectedPreset.angleChange"
-            ng-value="angleChange"
             ng-blur="changeSetting()"
           />
         </div>
+        
         <div class="contentContainer">
           <span style="width: 100%">Vertical wind? (experimental)</span>
           <input
-            id="verticalEnabledInput"
-            style="width: 30px"
             class="input"
             type="checkbox"
             ng-model="verticalEnabled"
             ng-change="changeSetting()"
           />
         </div>
+        
         <div class="contentContainer">
           <span>Affect grass?</span>
           <input
-            id="verticalEnabledInput"
-            style="width: 30px"
             class="input"
             type="checkbox"
             ng-model="groundCoverEnabled"
@@ -147,8 +134,6 @@
           />
           <span>Affect trees?</span>
           <input
-            id="verticalEnabledInput"
-            style="width: 30px"
             class="input"
             type="checkbox"
             ng-model="treesEnabled"
@@ -156,13 +141,15 @@
           />
         </div>
       </div>
+      
       <md-button
         class="changeButton visualButton"
         ng-click="hideSettings()"
-        style="margin-top: 131px"
+        style="margin-top: 131px; margin-left: calc(50% - 18px)"
       >
         <md-icon class="material-icons changeButtonIcon">settings</md-icon>
       </md-button>
+      
       <md-button
         class="changeButton visualButton"
         ng-click="toggleSize()"
@@ -171,14 +158,18 @@
         <md-icon class="material-icons changeButtonIcon">remove_circle</md-icon>
       </md-button>
     </div>
+    
     <div class="statContainer contentContainer">
       <span class="stat">Speed: {{ values.windSpeed }} {{ speedUnit }}</span>
+    
       <span class="stat">Angle: {{ values.windDirection }} °</span>
     </div>
+    
     <div class="contentContainer">
       <md-button ng-click="startWind()">
         <md-icon class="material-icons">play_arrow</md-icon>
       </md-button>
+    
       <md-button ng-click="endWind()">
         <md-icon class="material-icons">stop</md-icon>
       </md-button>
@@ -188,18 +179,21 @@
     <md-button
       class="changeButton"
       ng-click="toggleSize()"
-      style="width: auto"
       id="maximizeButton"
     >
       <md-icon class="material-icons changeButtonIcon">add_circle</md-icon>
     </md-button>
+    
     <md-button class="minimizedButton" ng-click="startWind()">
       <md-icon class="material-icons minimizedIcon">play_arrow</md-icon>
     </md-button>
+    
     <md-button class="minimizedButton" ng-click="endWind()">
       <md-icon class="material-icons minimizedIcon">stop</md-icon>
     </md-button>
+    
     <span>{{ values.windSpeed }} {{ speedUnit }}</span>
+    
     <span>{{ values.windDirection }} °</span>
   </div>
 </div>

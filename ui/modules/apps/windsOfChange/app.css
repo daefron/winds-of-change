@@ -17,7 +17,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border-bottom: solid 1px white;
+  border-bottom: 1px solid white;
 }
 /* buttons that change the state of the ui */
 .changeButton {
@@ -31,12 +31,20 @@
 /* floating buttons in visual */
 .visualButton {
   position: absolute;
-  margin-left: calc(50% - 18px);
 }
 /* icons used in float buttons */
 .changeButtonIcon {
   font-size: 26px;
   vertical-align: baseline;
+}
+#windPie {
+  width: 450px;
+  height: 450px;
+  position: absolute;
+  z-index: 10;
+  border-radius: 50%;
+  pointer-events: none;
+  display: none;
 }
 /* ~~~~ container for animation ~~~~ */
 #animationContainer {
@@ -106,12 +114,12 @@
   margin-bottom: 10px;
 }
 .contentContainer > input {
-  width: 50px;
+  width: 30px;
   height: 24px;
   margin: 0px;
 }
 .contentContainer > .input-light {
-  flex-grow: 0.3;
+  flex-grow: 0.4;
 }
 .contentContainer > button {
   width: calc(50% - 5px);
