@@ -200,7 +200,7 @@ end
 
 -- sends stored settings back to UI
 local function retrieveStoredSettings()
-    guihooks.trigger('RetrieveSettings', storedSettings)
+    guihooks.trigger('RetrieveWindSettings', storedSettings)
 end
 
 -- returns all ground cover wind speed to default
@@ -262,7 +262,7 @@ local function onGuiUpdate()
         end
 
         updateWind()
-        guihooks.trigger('ReceiveData', {wind.speed.value, wind.direction.value})
+        guihooks.trigger('ReceiveWindData', {wind.speed.value, wind.direction.value})
     end
 end
 
@@ -275,7 +275,7 @@ local function stopWind()
     resetTrees()
 
     -- tell UI that speed and angle is 0
-    guihooks.trigger('ReceiveData', {0, 0})
+    guihooks.trigger('ReceiveWindData', {0, 0})
 end
 
 local function onExtensionLoaded()

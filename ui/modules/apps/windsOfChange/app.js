@@ -434,7 +434,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         }
 
         // used when loop active and Lua returns wind data
-        scope.$on("ReceiveData", function (_, data) {
+        scope.$on("ReceiveWindData", function (_, data) {
           scope.$applyAsync(function () {
             const receivedSpeed = data[0];
             scope.values.windSpeed = receivedSpeed.toFixed(1);
@@ -498,7 +498,7 @@ angular.module("beamng.apps").directive("windsOfChange", [
         });
 
         // used when Lua returns settings data
-        scope.$on("RetrieveSettings", function (_, data) {
+        scope.$on("RetrieveWindSettings", function (_, data) {
           // sets all settings to receieved settings
           scope.presets = cloneObject(defaultPresets);
           scope.selectedPreset = scope.presets[data.id];
